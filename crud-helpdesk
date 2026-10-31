@@ -1,4 +1,4 @@
-python -c "import sqlite3; c=sqlite3.connect('helpdesk.db'); print(c.execute(\"SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'\").fetchall()); c.close()"
+python -c "import database; c=database.conectar_db(); print(c.execute('PRAGMA foreign_key_list(tickets)').fetchall()); c.close()"
 
 
 
