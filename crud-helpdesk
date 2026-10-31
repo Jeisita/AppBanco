@@ -1,6 +1,4 @@
-python -c "import database; c=database.conectar_db(); print(c.execute('PRAGMA foreign_key_list(tickets)').fetchall()); c.close()"
-
-
+python -c "import database; c=database.conectar_db(); print('Conexion correcta:', c.execute('SELECT 1').fetchone()[0]); c.close()"
 
 
 import os
