@@ -1,4 +1,29 @@
-python -c "import database; c=database.conectar_db(); print('Conexion correcta:', c.execute('SELECT 1').fetchone()[0]); c.close()"
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HelpDesk Lite</title>
+</head>
+<body>
+    <h1>HelpDesk Lite</h1>
+    <p>Sistema de soporte técnico</p>
+
+    <nav>
+        <a href="/">Inicio</a> |
+        <a href="/usuarios">Usuarios</a> |
+        <a href="/categorias">Categorías</a> |
+        <a href="/tickets">Tickets</a>
+    </nav>
+
+    <hr>
+
+    <h2>Panel principal</h2>
+    <p>Bienvenido al sistema de gestión de incidentes.</p>
+</body>
+</html>
+
+
 
 
 import os
