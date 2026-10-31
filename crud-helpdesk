@@ -1,3 +1,7 @@
+python -c "import sqlite3; c=sqlite3.connect('helpdesk.db'); print(c.execute(\"SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'\").fetchall()); c.close()"
+
+
+
 
 import os
 import sqlite3
