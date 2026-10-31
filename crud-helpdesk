@@ -1,4 +1,8 @@
-from flask import Flask, request, redirect, url_for, render_template_string
+python -c "import sqlite3; c=sqlite3.connect('datos.db'); print(c.execute(\"SELECT name FROM sqlite_master WHERE type='table'\").fetchall()); c.close()"
+
+
+
+rom flask import Flask, request, redirect, url_for, render_template_string
 import sqlite3
 import os
 
