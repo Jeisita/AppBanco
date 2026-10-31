@@ -1,3 +1,40 @@
+from flask import Flask, render_template
+from database import conectar_db, crear_tablas
+
+app = Flask(__name__)
+
+crear_tablas()
+
+
+@app.route("/")
+def inicio():
+    conexion = conectar_db()
+
+    total_tickets = conexion.execute(
+        "SELECT COUNT(*) FROM tickets"
+    ).fetchone()[0]
+
+    conexion.close()
+
+    return render_template(
+        "index.html",
+        total_tickets=total_tickets
+    )
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
+
+
+
+
+
+
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
