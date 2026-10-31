@@ -1,4 +1,80 @@
-python -c "import sqlite3; c=sqlite3.connect('datos.db'); print(c.execute('PRAGMA table_info(productos)').fetchall()); c.close()"
+
+import os
+import sqlite3
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent
+DATABASE = Path(
+    os.environ.get("HELPDESK_DATABASE", str(BASE_DIR / "helpdesk.db")
+)
+
+
+def conectar_db():
+    conexion = sqlite3.connect(DATABASE)
+    conexion.row_factory = sqlite3.Row
+    conexion.execute("PRAGMA foreign_keys = ON")
+    return conexion
+
+
+def crear_tablas():
+    conexion = conectar_db()
+
+    try:
+        conexion.executescript("""
+            CREATE TABLE IF NOT EXISTS usuarios (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nombre TEXT NOT NULL,
+                correo TEXT NOT NULL COLLATE NOCASE UNIQUE,
+                fecha_registro TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );
+
+            CREATE TABLE IF NOT EXISTS categorias (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nombre TEXT NOT NULL COLLATE NOCASE UNIQUE,
+                descripcion TEXT
+            );
+
+            CREATE TABLE IF NOT EXISTS tickets (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                titulo TEXT NOT NULL,
+                descripcion TEXT NOT NULL,
+                prioridad TEXT NOT NULL
+                    CHECK (prioridad IN ('Baja', 'Media', 'Alta')),
+                estado TEXT NOT NULL DEFAULT 'Abierto'
+                    CHECK (estado IN ('Abierto', 'En proceso', 'Resuelto')),
+                fecha_creacion TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                usuario_id INTEGER NOT NULL,
+                categoria_id INTEGER NOT NULL,
+                FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
+                FOREIGN KEY (categoria_id) REFERENCES categorias(id)
+            );
+        """)
+        conexion.commit()
+    finally:
+        conexion.close()
+
+
+if __name__ == "__main__":
+    crear_tablas()
+    print(f"Base de datos preparada: {DATABASE}")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
