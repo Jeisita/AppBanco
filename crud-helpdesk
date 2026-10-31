@@ -1,19 +1,16 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect, url_for
 from database import conectar_db, crear_tablas
 
 app = Flask(__name__)
-
 crear_tablas()
 
 
 @app.route("/")
 def inicio():
     conexion = conectar_db()
-
     total_tickets = conexion.execute(
         "SELECT COUNT(*) FROM tickets"
     ).fetchone()[0]
-
     conexion.close()
 
     return render_template(
@@ -22,9 +19,46 @@ def inicio():
     )
 
 
+@app.route("/usuarios", methods=["GET", "POST"])
+def usuarios():
+    error = ""
+
+    if request.method == "POST":
+        nombre = request.form.get("nombre", "").strip()
+        correo = request.form.get("correo", "").strip()
+
+        if not nombre or not correo:
+            error = "Debes completar todos los campos."
+        else:
+            conexion = conectar_db()
+            try:
+                conexion.execute(
+                    "INSERT INTO usuarios (nombre, correo) VALUES (?, ?)",
+                    (nombre, correo)
+                )
+                conexion.commit()
+                return redirect(url_for("usuarios"))
+            except Exception:
+                conexion.rollback()
+                error = "Ese correo ya existe o los datos no son válidos."
+            finally:
+                conexion.close()
+
+    conexion = conectar_db()
+    lista_usuarios = conexion.execute(
+        "SELECT * FROM usuarios ORDER BY id DESC"
+    ).fetchall()
+    conexion.close()
+
+    return render_template(
+        "usuarios.html",
+        usuarios=lista_usuarios,
+        error=error
+    )
+
+
 if __name__ == "__main__":
     app.run(debug=True)
-
 
 
 
