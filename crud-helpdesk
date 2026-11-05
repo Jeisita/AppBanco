@@ -1,36 +1,52 @@
-@app.route("/categorias", methods=["GET", "POST"])
-def categorias():
-    error = ""
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Categorías - HelpDesk Lite</title>
+</head>
+<body>
+    <h1>Categorías</h1>
 
-    if request.method == "POST":
-        nombre = request.form.get("nombre", "").strip()
-        descripcion = request.form.get("descripcion", "").strip()
+    <p><a href="/">Volver al inicio</a></p>
 
-        if not nombre:
-            error = "El nombre es obligatorio."
-        else:
-            conexion = conectar_db()
-            try:
-                conexion.execute(
-                    "INSERT INTO categorias (nombre, descripcion) VALUES (?, ?)",
-                    (nombre, descripcion)
-                )
-                conexion.commit()
-                return redirect(url_for("categorias"))
-            except Exception:
-                conexion.rollback()
-                error = "La categoría ya existe o los datos no son válidos."
-            finally:
-                conexion.close()
+    <h2>Crear categoría</h2>
 
-    conexion = conectar_db()
-    lista_categorias = conexion.execute(
-        "SELECT * FROM categorias ORDER BY id DESC"
-    ).fetchall()
-    conexion.close()
+    <p>{{ error }}</p>
 
-    return render_template(
-        "categorias.html",
-        categorias=lista_categorias,
-        error=error
-    )
+    <form method="POST">
+        <label>Nombre:</label>
+        <input type="text" name="nombre" required>
+        <br><br>
+
+        <label>Descripción:</label>
+        <textarea name="descripcion"></textarea>
+        <br><br>
+
+        <button type="submit">Guardar categoría</button>
+    </form>
+
+    <hr>
+
+    <h2>Categorías registradas</h2>
+
+    {% if categorias %}
+    <table border="1" cellpadding="8">
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Descripción</th>
+        </tr>
+
+        {% for categoria in categorias %}
+        <tr>
+            <td>{{ categoria.id }}</td>
+            <td>{{ categoria.nombre }}</td>
+            <td>{{ categoria.descripcion }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p>Aún no hay categorías registradas.</p>
+    {% endif %}
+</body>
+</html>
