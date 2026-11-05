@@ -1,57 +1,91 @@
-@app.route("/tickets", methods=["GET", "POST"])
-def tickets():
-    error = ""
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Tickets - HelpDesk Lite</title>
+</head>
+<body>
 
-    conexion = conectar_db()
+    <h1>Gestión de Tickets</h1>
 
-    usuarios = conexion.execute(
-        "SELECT * FROM usuarios ORDER BY nombre"
-    ).fetchall()
+    <p><a href="/">Volver al inicio</a></p>
 
-    categorias = conexion.execute(
-        "SELECT * FROM categorias ORDER BY nombre"
-    ).fetchall()
+    <h2>Registrar nuevo ticket</h2>
 
-    if request.method == "POST":
-        titulo = request.form.get("titulo", "").strip()
-        descripcion = request.form.get("descripcion", "").strip()
-        prioridad = request.form.get("prioridad")
-        usuario_id = request.form.get("usuario_id")
-        categoria_id = request.form.get("categoria_id")
+    <p>{{ error }}</p>
 
-        if not titulo or not descripcion or not usuario_id or not categoria_id:
-            error = "Debes completar todos los campos."
-        else:
-            try:
-                conexion.execute(
-                    """INSERT INTO tickets
-                    (titulo, descripcion, prioridad, usuario_id, categoria_id)
-                    VALUES (?, ?, ?, ?, ?)""",
-                    (titulo, descripcion, prioridad, usuario_id, categoria_id)
-                )
-                conexion.commit()
-                conexion.close()
-                return redirect(url_for("tickets"))
+    <form method="POST">
 
-            except Exception:
-                conexion.rollback()
-                error = "No se pudo registrar el ticket."
+        <label>Título:</label>
+        <input type="text" name="titulo" required>
+        <br><br>
 
-    lista_tickets = conexion.execute("""
-        SELECT tickets.*, usuarios.nombre AS solicitante,
-        categorias.nombre AS categoria
-        FROM tickets
-        JOIN usuarios ON tickets.usuario_id = usuarios.id
-        JOIN categorias ON tickets.categoria_id = categorias.id
-        ORDER BY tickets.id DESC
-    """).fetchall()
+        <label>Descripción:</label>
+        <textarea name="descripcion" required></textarea>
+        <br><br>
 
-    conexion.close()
+        <label>Prioridad:</label>
+        <select name="prioridad" required>
+            <option value="Baja">Baja</option>
+            <option value="Media">Media</option>
+            <option value="Alta">Alta</option>
+        </select>
+        <br><br>
 
-    return render_template(
-        "tickets.html",
-        tickets=lista_tickets,
-        usuarios=usuarios,
-        categorias=categorias,
-        error=error
-    )
+        <label>Usuario:</label>
+        <select name="usuario_id" required>
+            {% for usuario in usuarios %}
+            <option value="{{ usuario.id }}">
+                {{ usuario.nombre }}
+            </option>
+            {% endfor %}
+        </select>
+        <br><br>
+
+        <label>Categoría:</label>
+        <select name="categoria_id" required>
+            {% for categoria in categorias %}
+            <option value="{{ categoria.id }}">
+                {{ categoria.nombre }}
+            </option>
+            {% endfor %}
+        </select>
+        <br><br>
+
+        <button type="submit">Registrar ticket</button>
+
+    </form>
+
+    <hr>
+
+    <h2>Tickets registrados</h2>
+
+    {% if tickets %}
+    <table border="1" cellpadding="8">
+        <tr>
+            <th>ID</th>
+            <th>Título</th>
+            <th>Descripción</th>
+            <th>Prioridad</th>
+            <th>Solicitante</th>
+            <th>Categoría</th>
+        </tr>
+
+        {% for ticket in tickets %}
+        <tr>
+            <td>{{ ticket.id }}</td>
+            <td>{{ ticket.titulo }}</td>
+            <td>{{ ticket.descripcion }}</td>
+            <td>{{ ticket.prioridad }}</td>
+            <td>{{ ticket.solicitante }}</td>
+            <td>{{ ticket.categoria }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    {% else %}
+    <p>Aún no hay tickets registrados.</p>
+    {% endif %}
+
+</body>
+</html>
