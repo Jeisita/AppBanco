@@ -1,54 +1,105 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Usuarios - HelpDesk Lite</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
-    <h1>Usuarios</h1>
 
-    <p><a href="/">Volver al inicio</a></p>
+    <div class="layout">
 
-    <h2>Registrar usuario</h2>
+        <aside class="sidebar">
+            <h2>☕ HelpDesk Lite</h2>
 
-    <p>{{ error }}</p>
+            <nav>
+                <a href="/">⌂ Inicio</a>
+                <a href="/usuarios" class="active">♙ Usuarios</a>
+                <a href="/categorias">▤ Categorías</a>
+                <a href="/tickets">▣ Tickets</a>
+            </nav>
+        </aside>
 
-    <form method="POST">
-        <label>Nombre:</label>
-        <input type="text" name="nombre" required>
-        <br><br>
+        <main class="main-content">
 
-        <label>Correo electrónico:</label>
-        <input type="email" name="correo" required>
-        <br><br>
+            <header class="page-header">
+                <h1>Gestión de usuarios</h1>
+                <p>Registra y consulta los usuarios del sistema.</p>
+            </header>
 
-        <button type="submit">Guardar usuario</button>
-    </form>
+            <section class="card">
+                <h2>Registrar usuario</h2>
 
-    <hr>
+                {% if error %}
+                    <div class="alert">{{ error }}</div>
+                {% endif %}
 
-    <h2>Usuarios registrados</h2>
+                <form method="POST">
 
-    {% if usuarios %}
-    <table border="1" cellpadding="8">
-        <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Correo</th>
-            <th>Fecha</th>
-        </tr>
+                    <label>Nombre completo:</label>
+                    <input
+                        type="text"
+                        name="nombre"
+                        placeholder="Escribe el nombre del usuario"
+                        required
+                    >
 
-        {% for usuario in usuarios %}
-        <tr>
-            <td>{{ usuario.id }}</td>
-            <td>{{ usuario.nombre }}</td>
-            <td>{{ usuario.correo }}</td>
-            <td>{{ usuario.fecha_registro }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-    {% else %}
-    <p>Aún no hay usuarios registrados.</p>
-    {% endif %}
+                    <label>Correo electrónico:</label>
+                    <input
+                        type="email"
+                        name="correo"
+                        placeholder="usuario@correo.com"
+                        required
+                    >
+
+                    <button type="submit">Guardar usuario</button>
+
+                </form>
+            </section>
+
+            <br>
+
+            <section class="card">
+                <h2>Usuarios registrados</h2>
+
+                {% if usuarios %}
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Correo electrónico</th>
+                                <th>Fecha de registro</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for usuario in usuarios %}
+                            <tr>
+                                <td>{{ usuario.id }}</td>
+                                <td>{{ usuario.nombre }}</td>
+                                <td>{{ usuario.correo }}</td>
+                                <td>{{ usuario.fecha_registro }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>Aún no hay usuarios registrados.</p>
+                {% endif %}
+            </section>
+
+            <footer>
+                <p>HelpDesk Lite · Gestión de soporte técnico</p>
+            </footer>
+
+        </main>
+
+    </div>
+
 </body>
 </html>
