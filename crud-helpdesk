@@ -1,53 +1,22 @@
-<h3>Filtrar tickets</h3>
+@app.route("/")
+def inicio():
+    conexion = conectar_db()
 
-<form method="GET" action="/tickets">
+    estadisticas = conexion.execute("""
+        SELECT
+            COUNT(*),
+            SUM(CASE WHEN estado = 'Abierto' THEN 1 ELSE 0 END),
+            SUM(CASE WHEN estado = 'En proceso' THEN 1 ELSE 0 END),
+            SUM(CASE WHEN estado = 'Resuelto' THEN 1 ELSE 0 END)
+        FROM tickets
+    """).fetchone()
 
-    <label>Estado:</label>
+    conexion.close()
 
-    <select name="estado">
-        <option value="">Todos</option>
-
-        <option value="Abierto"
-        {% if request.args.get('estado') == 'Abierto' %}selected{% endif %}>
-            Abierto
-        </option>
-
-        <option value="En proceso"
-        {% if request.args.get('estado') == 'En proceso' %}selected{% endif %}>
-            En proceso
-        </option>
-
-        <option value="Resuelto"
-        {% if request.args.get('estado') == 'Resuelto' %}selected{% endif %}>
-            Resuelto
-        </option>
-    </select>
-
-    <label>Prioridad:</label>
-
-    <select name="prioridad">
-        <option value="">Todas</option>
-
-        <option value="Baja"
-        {% if request.args.get('prioridad') == 'Baja' %}selected{% endif %}>
-            Baja
-        </option>
-
-        <option value="Media"
-        {% if request.args.get('prioridad') == 'Media' %}selected{% endif %}>
-            Media
-        </option>
-
-        <option value="Alta"
-        {% if request.args.get('prioridad') == 'Alta' %}selected{% endif %}>
-            Alta
-        </option>
-    </select>
-
-    <button type="submit">Filtrar</button>
-
-    <a href="/tickets">Limpiar filtros</a>
-
-</form>
-
-<hr>
+    return render_template(
+        "index.html",
+        total_tickets=estadisticas[0] or 0,
+        tickets_abiertos=estadisticas[1] or 0,
+        tickets_proceso=estadisticas[2] or 0,
+        tickets_resueltos=estadisticas[3] or 0
+    )
