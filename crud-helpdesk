@@ -1,122 +1,66 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HelpDesk Lite - Dashboard</title>
-
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f1f5f9;
-            margin: 0;
-            padding: 30px;
-            color: #1e293b;
-        }
-
-        header {
-            background: #1e3a8a;
-            color: white;
-            padding: 25px;
-            border-radius: 12px;
-        }
-
-        nav {
-            margin: 20px 0;
-        }
-
-        nav a {
-            margin-right: 20px;
-            color: #1d4ed8;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .dashboard {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-            gap: 20px;
-            margin-top: 25px;
-        }
-
-        .card {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px #00000012;
-            border-left: 5px solid #2563eb;
-        }
-
-        .card h3 {
-            color: #64748b;
-            margin-top: 0;
-        }
-
-        .numero {
-            font-size: 38px;
-            font-weight: bold;
-            margin-bottom: 0;
-        }
-
-        .abiertos { border-color: #dc2626; }
-        .proceso { border-color: #d97706; }
-        .resueltos { border-color: #16a34a; }
-        .total { border-color: #2563eb; }
-
-        footer {
-            margin-top: 40px;
-            color: #64748b;
-            text-align: center;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
 
-    <header>
-        <h1>HelpDesk Lite</h1>
-        <p>Sistema de gestión de soporte técnico</p>
-    </header>
+    <div class="layout">
 
-    <nav>
-        <a href="/">Inicio</a>
-        <a href="/usuarios">Usuarios</a>
-        <a href="/categorias">Categorías</a>
-        <a href="/tickets">Tickets</a>
-    </nav>
+        <aside class="sidebar">
+            <h2>☕ HelpDesk Lite</h2>
 
-    <h2>Panel principal</h2>
-    <p>Resumen general de los incidentes registrados.</p>
+            <nav>
+                <a href="/" class="active">⌂ Inicio</a>
+                <a href="/usuarios">♙ Usuarios</a>
+                <a href="/categorias">▤ Categorías</a>
+                <a href="/tickets">▣ Tickets</a>
+            </nav>
+        </aside>
 
-    <section class="dashboard">
+        <main class="main-content">
 
-        <div class="card total">
-            <h3>Total de tickets</h3>
-            <p class="numero">{{ total_tickets }}</p>
-        </div>
+            <header class="page-header">
+                <h1>Panel principal</h1>
+                <p>Bienvenida al sistema de gestión de soporte técnico.</p>
+            </header>
 
-        <div class="card abiertos">
-            <h3>Tickets abiertos</h3>
-            <p class="numero">{{ tickets_abiertos }}</p>
-        </div>
+            <section class="stats-grid">
 
-        <div class="card proceso">
-            <h3>En proceso</h3>
-            <p class="numero">{{ tickets_proceso }}</p>
-        </div>
+                <div class="card">
+                    <h3>Total de tickets</h3>
+                    <p class="stat-number">{{ total_tickets }}</p>
+                </div>
 
-        <div class="card resueltos">
-            <h3>Tickets resueltos</h3>
-            <p class="numero">{{ tickets_resueltos }}</p>
-        </div>
+                <div class="card">
+                    <h3>Tickets abiertos</h3>
+                    <p class="stat-number">{{ tickets_abiertos }}</p>
+                </div>
 
-    </section>
+                <div class="card">
+                    <h3>En proceso</h3>
+                    <p class="stat-number">{{ tickets_proceso }}</p>
+                </div>
 
-    <footer>
-        <p>HelpDesk Lite - Gestión de soporte técnico</p>
-    </footer>
+                <div class="card">
+                    <h3>Tickets resueltos</h3>
+                    <p class="stat-number">{{ tickets_resueltos }}</p>
+                </div>
+
+            </section>
+
+            <footer>
+                <p>HelpDesk Lite · Gestión de soporte técnico</p>
+            </footer>
+
+        </main>
+
+    </div>
 
 </body>
 </html>
-jeisita@Devopsaux:~/proyecto-crud$ 
-
