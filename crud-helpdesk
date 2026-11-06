@@ -1,66 +1,54 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HelpDesk Lite - Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Usuarios - HelpDesk Lite</title>
 </head>
-
 <body>
+    <h1>Usuarios</h1>
 
-    <div class="layout">
+    <p><a href="/">Volver al inicio</a></p>
 
-        <aside class="sidebar">
-            <h2>☕ HelpDesk Lite</h2>
+    <h2>Registrar usuario</h2>
 
-            <nav>
-                <a href="/" class="active">⌂ Inicio</a>
-                <a href="/usuarios">♙ Usuarios</a>
-                <a href="/categorias">▤ Categorías</a>
-                <a href="/tickets">▣ Tickets</a>
-            </nav>
-        </aside>
+    <p>{{ error }}</p>
 
-        <main class="main-content">
+    <form method="POST">
+        <label>Nombre:</label>
+        <input type="text" name="nombre" required>
+        <br><br>
 
-            <header class="page-header">
-                <h1>Panel principal</h1>
-                <p>Bienvenida al sistema de gestión de soporte técnico.</p>
-            </header>
+        <label>Correo electrónico:</label>
+        <input type="email" name="correo" required>
+        <br><br>
 
-            <section class="stats-grid">
+        <button type="submit">Guardar usuario</button>
+    </form>
 
-                <div class="card">
-                    <h3>Total de tickets</h3>
-                    <p class="stat-number">{{ total_tickets }}</p>
-                </div>
+    <hr>
 
-                <div class="card">
-                    <h3>Tickets abiertos</h3>
-                    <p class="stat-number">{{ tickets_abiertos }}</p>
-                </div>
+    <h2>Usuarios registrados</h2>
 
-                <div class="card">
-                    <h3>En proceso</h3>
-                    <p class="stat-number">{{ tickets_proceso }}</p>
-                </div>
+    {% if usuarios %}
+    <table border="1" cellpadding="8">
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Correo</th>
+            <th>Fecha</th>
+        </tr>
 
-                <div class="card">
-                    <h3>Tickets resueltos</h3>
-                    <p class="stat-number">{{ tickets_resueltos }}</p>
-                </div>
-
-            </section>
-
-            <footer>
-                <p>HelpDesk Lite · Gestión de soporte técnico</p>
-            </footer>
-
-        </main>
-
-    </div>
-
+        {% for usuario in usuarios %}
+        <tr>
+            <td>{{ usuario.id }}</td>
+            <td>{{ usuario.nombre }}</td>
+            <td>{{ usuario.correo }}</td>
+            <td>{{ usuario.fecha_registro }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p>Aún no hay usuarios registrados.</p>
+    {% endif %}
 </body>
 </html>
