@@ -1,3 +1,12 @@
-<span class="{% if ticket.estado == 'Abierto' %}estado-abierto{% elif ticket.estado == 'En proceso' %}estado-proceso{% else %}estado-resuelto{% endif %}">
-    {{ ticket.estado }}
-</span>
+SELECT
+    t.id,
+    t.titulo,
+    t.descripcion,
+    t.prioridad,
+    t.estado,
+    u.nombre AS solicitante,
+    c.nombre AS categoria,
+    t.fecha_creacion
+FROM tickets t
+INNER JOIN usuarios u ON t.usuario_id = u.id
+INNER JOIN categorias c ON t.categoria_id = c.id;
