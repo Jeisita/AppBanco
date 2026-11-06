@@ -1,105 +1,52 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Usuarios - HelpDesk Lite</title>
-
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Categorías - HelpDesk Lite</title>
 </head>
-
 <body>
+    <h1>Categorías</h1>
 
-    <div class="layout">
+    <p><a href="/">Volver al inicio</a></p>
 
-        <aside class="sidebar">
-            <h2>☕ HelpDesk Lite</h2>
+    <h2>Crear categoría</h2>
 
-            <nav>
-                <a href="/">⌂ Inicio</a>
-                <a href="/usuarios" class="active">♙ Usuarios</a>
-                <a href="/categorias">▤ Categorías</a>
-                <a href="/tickets">▣ Tickets</a>
-            </nav>
-        </aside>
+    <p>{{ error }}</p>
 
-        <main class="main-content">
+    <form method="POST">
+        <label>Nombre:</label>
+        <input type="text" name="nombre" required>
+        <br><br>
 
-            <header class="page-header">
-                <h1>Gestión de usuarios</h1>
-                <p>Registra y consulta los usuarios del sistema.</p>
-            </header>
+        <label>Descripción:</label>
+        <textarea name="descripcion"></textarea>
+        <br><br>
 
-            <section class="card">
-                <h2>Registrar usuario</h2>
+        <button type="submit">Guardar categoría</button>
+    </form>
 
-                {% if error %}
-                    <div class="alert">{{ error }}</div>
-                {% endif %}
+    <hr>
 
-                <form method="POST">
+    <h2>Categorías registradas</h2>
 
-                    <label>Nombre completo:</label>
-                    <input
-                        type="text"
-                        name="nombre"
-                        placeholder="Escribe el nombre del usuario"
-                        required
-                    >
+    {% if categorias %}
+    <table border="1" cellpadding="8">
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Descripción</th>
+        </tr>
 
-                    <label>Correo electrónico:</label>
-                    <input
-                        type="email"
-                        name="correo"
-                        placeholder="usuario@correo.com"
-                        required
-                    >
-
-                    <button type="submit">Guardar usuario</button>
-
-                </form>
-            </section>
-
-            <br>
-
-            <section class="card">
-                <h2>Usuarios registrados</h2>
-
-                {% if usuarios %}
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Nombre</th>
-                                <th>Correo electrónico</th>
-                                <th>Fecha de registro</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            {% for usuario in usuarios %}
-                            <tr>
-                                <td>{{ usuario.id }}</td>
-                                <td>{{ usuario.nombre }}</td>
-                                <td>{{ usuario.correo }}</td>
-                                <td>{{ usuario.fecha_registro }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                {% else %}
-                    <p>Aún no hay usuarios registrados.</p>
-                {% endif %}
-            </section>
-
-            <footer>
-                <p>HelpDesk Lite · Gestión de soporte técnico</p>
-            </footer>
-
-        </main>
-
-    </div>
-
+        {% for categoria in categorias %}
+        <tr>
+            <td>{{ categoria.id }}</td>
+            <td>{{ categoria.nombre }}</td>
+            <td>{{ categoria.descripcion }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p>Aún no hay categorías registradas.</p>
+    {% endif %}
 </body>
 </html>
