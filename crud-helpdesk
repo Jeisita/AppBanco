@@ -1,24 +1,27 @@
-<td>
-    <form method="POST"
-          action="{{ url_for('actualizar_estado', ticket_id=ticket.id) }}">
+estado_filtro = request.args.get("estado", "")
+prioridad_filtro = request.args.get("prioridad", "")
 
-        <select name="estado">
-            <option value="Abierto"
-                {% if ticket.estado == 'Abierto' %}selected{% endif %}>
-                Abierto
-            </option>
+consulta = """
+    SELECT tickets.*, usuarios.nombre AS solicitante,
+    categorias.nombre AS categoria
+    FROM tickets
+    JOIN usuarios ON tickets.usuario_id = usuarios.id
+    JOIN categorias ON tickets.categoria_id = categorias.id
+    WHERE 1=1
+"""
 
-            <option value="En proceso"
-                {% if ticket.estado == 'En proceso' %}selected{% endif %}>
-                En proceso
-            </option>
+parametros = []
 
-            <option value="Resuelto"
-                {% if ticket.estado == 'Resuelto' %}selected{% endif %}>
-                Resuelto
-            </option>
-        </select>
+if estado_filtro:
+    consulta += " AND tickets.estado = ?"
+    parametros.append(estado_filtro)
 
-        <button type="submit">Actualizar</button>
-    </form>
-</td>
+if prioridad_filtro:
+    consulta += " AND tickets.prioridad = ?"
+    parametros.append(prioridad_filtro)
+
+consulta += " ORDER BY tickets.id DESC"
+
+lista_tickets = conexion.execute(
+    consulta, parametros
+).fetchall()
