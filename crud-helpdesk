@@ -1,5 +1,3 @@
-<td>
-    <span class="{% if ticket.prioridad == 'Alta' %}prioridad-alta{% elif ticket.prioridad == 'Media' %}prioridad-media{% else %}prioridad-baja{% endif %}">
-        {{ ticket.prioridad }}
-    </span>
-</td>
+<span class="{% if ticket.estado == 'Abierto' %}estado-abierto{% elif ticket.estado == 'En proceso' %}estado-proceso{% else %}estado-resuelto{% endif %}">
+    {{ ticket.estado }}
+</span>
