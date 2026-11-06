@@ -1,27 +1,53 @@
-estado_filtro = request.args.get("estado", "")
-prioridad_filtro = request.args.get("prioridad", "")
+<h3>Filtrar tickets</h3>
 
-consulta = """
-    SELECT tickets.*, usuarios.nombre AS solicitante,
-    categorias.nombre AS categoria
-    FROM tickets
-    JOIN usuarios ON tickets.usuario_id = usuarios.id
-    JOIN categorias ON tickets.categoria_id = categorias.id
-    WHERE 1=1
-"""
+<form method="GET" action="/tickets">
 
-parametros = []
+    <label>Estado:</label>
 
-if estado_filtro:
-    consulta += " AND tickets.estado = ?"
-    parametros.append(estado_filtro)
+    <select name="estado">
+        <option value="">Todos</option>
 
-if prioridad_filtro:
-    consulta += " AND tickets.prioridad = ?"
-    parametros.append(prioridad_filtro)
+        <option value="Abierto"
+        {% if request.args.get('estado') == 'Abierto' %}selected{% endif %}>
+            Abierto
+        </option>
 
-consulta += " ORDER BY tickets.id DESC"
+        <option value="En proceso"
+        {% if request.args.get('estado') == 'En proceso' %}selected{% endif %}>
+            En proceso
+        </option>
 
-lista_tickets = conexion.execute(
-    consulta, parametros
-).fetchall()
+        <option value="Resuelto"
+        {% if request.args.get('estado') == 'Resuelto' %}selected{% endif %}>
+            Resuelto
+        </option>
+    </select>
+
+    <label>Prioridad:</label>
+
+    <select name="prioridad">
+        <option value="">Todas</option>
+
+        <option value="Baja"
+        {% if request.args.get('prioridad') == 'Baja' %}selected{% endif %}>
+            Baja
+        </option>
+
+        <option value="Media"
+        {% if request.args.get('prioridad') == 'Media' %}selected{% endif %}>
+            Media
+        </option>
+
+        <option value="Alta"
+        {% if request.args.get('prioridad') == 'Alta' %}selected{% endif %}>
+            Alta
+        </option>
+    </select>
+
+    <button type="submit">Filtrar</button>
+
+    <a href="/tickets">Limpiar filtros</a>
+
+</form>
+
+<hr>
