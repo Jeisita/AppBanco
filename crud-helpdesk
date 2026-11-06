@@ -1,224 +1,213 @@
+jeisita@Devopsaux:~/proyecto-crud$ cat static/style.css 
+/* =================================
+   HELPDESK LITE - ROSE CAFÉ
+================================= */
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tickets - HelpDesk Lite</title>
+:root {
+    --rosa-nude: #F7E9E7;
+    --rosa-viejo: #D8A7A0;
+    --terracota: #A87569;
+    --cafe: #8B6558;
+    --beige: #E8D7C8;
+    --crema: #FFF9F5;
+    --texto: #59443D;
+    --blanco: #FFFFFF;
+    --sombra: 0 4px 14px rgba(139, 101, 88, 0.10);
+}
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
+* {
+    box-sizing: border-box;
+}
 
-<body>
+body {
+    margin: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: var(--crema);
+    color: var(--texto);
+}
 
-    <div class="layout">
+/* Estructura principal */
 
-        <aside class="sidebar">
-            <h2>☕ HelpDesk Lite</h2>
+.layout {
+    display: flex;
+    min-height: 100vh;
+}
 
-            <nav>
-                <a href="/">⌂ Inicio</a>
-                <a href="/usuarios">♙ Usuarios</a>
-                <a href="/categorias">▤ Categorías</a>
-                <a href="/tickets" class="active">▣ Tickets</a>
-            </nav>
-        </aside>
+/* Menú lateral */
 
-        <main class="main-content">
+.sidebar {
+    width: 250px;
+    min-height: 100vh;
+    background: var(--rosa-nude);
+    padding: 28px 18px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+}
 
-            <header class="page-header">
-                <h1>Gestión de tickets</h1>
-                <p>Registra, consulta y administra los incidentes de soporte técnico.</p>
-            </header>
+.sidebar h2 {
+    color: var(--cafe);
+    text-align: center;
+    margin: 0 0 35px;
+}
 
-            <!-- FORMULARIO DE REGISTRO -->
+.sidebar a {
+    display: block;
+    padding: 13px 16px;
+    margin-bottom: 9px;
+    color: var(--cafe);
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: 0.2s;
+}
 
-            <section class="card">
-                <h2>Registrar nuevo ticket</h2>
+.sidebar a:hover,
+.sidebar a.active {
+    background: var(--rosa-viejo);
+    color: var(--blanco);
+}
 
-                {% if error %}
-                    <div class="alert">{{ error }}</div>
-                {% endif %}
+/* Contenido */
 
-                <form method="POST">
+.main-content {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+    padding: 35px;
+}
 
-                    <label>Título:</label>
-                    <input
-                        type="text"
-                        name="titulo"
-                        placeholder="Escribe el título del incidente"
-                        required
-                    >
+h1, h2, h3 {
+    color: var(--cafe);
+}
 
-                    <label>Descripción:</label>
-                    <textarea
-                        name="descripcion"
-                        rows="4"
-                        placeholder="Describe el problema o solicitud"
-                        required
-                    ></textarea>
+.page-header {
+    margin-bottom: 25px;
+}
 
-                    <label>Prioridad:</label>
-                    <select name="prioridad" required>
-                        <option value="Baja">Baja</option>
-                        <option value="Media">Media</option>
-                        <option value="Alta">Alta</option>
-                    </select>
+/* Tarjetas */
 
-                    <label>Usuario solicitante:</label>
-                    <select name="usuario_id" required>
-                        {% for usuario in usuarios %}
-                            <option value="{{ usuario.id }}">
-                                {{ usuario.nombre }}
-                            </option>
-                        {% endfor %}
-                    </select>
+.card {
+    background: var(--blanco);
+    border: 1px solid var(--beige);
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: var(--sombra);
+}
 
-                    <label>Categoría:</label>
-                    <select name="categoria_id" required>
-                        {% for categoria in categorias %}
-                            <option value="{{ categoria.id }}">
-                                {{ categoria.nombre }}
-                            </option>
-                        {% endfor %}
-                    </select>
+/* Estadísticas */
 
-                    <button type="submit">Registrar ticket</button>
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+}
 
-                </form>
-            </section>
+.stat-number {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--terracota);
+}
 
-            <br>
+/* Formularios */
 
-            <!-- FILTROS -->
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 11px 13px;
+    margin: 7px 0 16px;
+    border: 1px solid var(--beige);
+    border-radius: 9px;
+    background: var(--crema);
+    color: var(--texto);
+    font: inherit;
+}
 
-            <section class="card">
-                <h2>Consultar tickets</h2>
-                <p>Utiliza los filtros para encontrar los incidentes registrados.</p>
+input:focus,
+select:focus,
+textarea:focus {
+    outline: 2px solid var(--rosa-viejo);
+    border-color: var(--terracota);
+}
 
-                <form method="GET" action="/tickets">
+label {
+    font-weight: 600;
+    color: var(--cafe);
+}
 
-                    <label>Estado:</label>
-                    <select name="estado">
-                        <option value="">Todos</option>
+/* Botones */
 
-                        <option value="Abierto"
-                            {% if request.args.get('estado') == 'Abierto' %}selected{% endif %}>
-                            Abierto
-                        </option>
+button,
+.btn {
+    display: inline-block;
+    padding: 11px 18px;
+    border: none;
+    border-radius: 9px;
+    background: var(--rosa-viejo);
+    color: var(--blanco);
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: 0.2s;
+}
 
-                        <option value="En proceso"
-                            {% if request.args.get('estado') == 'En proceso' %}selected{% endif %}>
-                            En proceso
-                        </option>
+button:hover,
+.btn:hover {
+    background: var(--terracota);
+}
 
-                        <option value="Resuelto"
-                            {% if request.args.get('estado') == 'Resuelto' %}selected{% endif %}>
-                            Resuelto
-                        </option>
-                    </select>
+/* Tablas */
 
-                    <label>Prioridad:</label>
-                    <select name="prioridad">
-                        <option value="">Todas</option>
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--blanco);
+    border-radius: 12px;
+    overflow: hidden;
+}
 
-                        <option value="Baja"
-                            {% if request.args.get('prioridad') == 'Baja' %}selected{% endif %}>
-                            Baja
-                        </option>
+th {
+    background: var(--rosa-nude);
+    color: var(--cafe);
+    text-align: left;
+}
 
-                        <option value="Media"
-                            {% if request.args.get('prioridad') == 'Media' %}selected{% endif %}>
-                            Media
-                        </option>
+th, td {
+    padding: 13px;
+    border-bottom: 1px solid var(--beige);
+}
 
-                        <option value="Alta"
-                            {% if request.args.get('prioridad') == 'Alta' %}selected{% endif %}>
-                            Alta
-                        </option>
-                    </select>
+tr:hover td {
+    background: #FFFCFA;
+}
 
-                    <button type="submit">Filtrar tickets</button>
-                    <a href="/tickets" class="btn">Limpiar filtros</a>
+/* Mensajes */
 
-                </form>
-            </section>
+.alert {
+    padding: 13px 16px;
+    margin-bottom: 18px;
+    border-radius: 9px;
+    background: var(--rosa-nude);
+    color: var(--cafe);
+}
 
-            <br>
+/* Adaptación a pantallas pequeñas */
 
-            <!-- LISTADO DE TICKETS -->
+@media (max-width: 700px) {
+    .sidebar {
+        width: 100%;
+        min-height: auto;
+        position: relative;
+    }
 
-            <section class="card">
-                <h2>Tickets registrados</h2>
+    .layout {
+        display: block;
+    }
 
-                {% if tickets %}
-
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Título</th>
-                                <th>Descripción</th>
-                                <th>Prioridad</th>
-                                <th>Solicitante</th>
-                                <th>Categoría</th>
-                                <th>Estado</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            {% for ticket in tickets %}
-                            <tr>
-                                <td>{{ ticket.id }}</td>
-                                <td>{{ ticket.titulo }}</td>
-                                <td>{{ ticket.descripcion }}</td>
-                                <td>{{ ticket.prioridad }}</td>
-                                <td>{{ ticket.solicitante }}</td>
-                                <td>{{ ticket.categoria }}</td>
-
-                                <td>
-                                    <form method="POST"
-                                          action="{{ url_for('actualizar_estado', ticket_id=ticket.id) }}">
-
-                                        <select name="estado">
-                                            <option value="Abierto"
-                                                {% if ticket.estado == 'Abierto' %}selected{% endif %}>
-                                                Abierto
-                                            </option>
-
-                                            <option value="En proceso"
-                                                {% if ticket.estado == 'En proceso' %}selected{% endif %}>
-                                                En proceso
-                                            </option>
-
-                                            <option value="Resuelto"
-                                                {% if ticket.estado == 'Resuelto' %}selected{% endif %}>
-                                                Resuelto
-                                            </option>
-                                        </select>
-
-                                        <button type="submit">Actualizar</button>
-
-                                    </form>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-
-                {% else %}
-                    <p>No se encontraron tickets con los filtros seleccionados.</p>
-                {% endif %}
-
-            </section>
-
-            <footer>
-                <p>HelpDesk Lite · Gestión de soporte técnico</p>
-            </footer>
-
-        </main>
-
-    </div>
-
-</body>
-</html>
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+        padding: 20px;
+    }
+}
