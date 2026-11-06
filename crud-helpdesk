@@ -1,21 +1,24 @@
-@app.route("/tickets/<int:ticket_id>/estado", methods=["POST"])
-def actualizar_estado(ticket_id):
+<td>
+    <form method="POST"
+          action="{{ url_for('actualizar_estado', ticket_id=ticket.id) }}">
 
-    nuevo_estado = request.form.get("estado")
+        <select name="estado">
+            <option value="Abierto"
+                {% if ticket.estado == 'Abierto' %}selected{% endif %}>
+                Abierto
+            </option>
 
-    estados_validos = ["Abierto", "En proceso", "Resuelto"]
+            <option value="En proceso"
+                {% if ticket.estado == 'En proceso' %}selected{% endif %}>
+                En proceso
+            </option>
 
-    if nuevo_estado not in estados_validos:
-        return redirect(url_for("tickets"))
+            <option value="Resuelto"
+                {% if ticket.estado == 'Resuelto' %}selected{% endif %}>
+                Resuelto
+            </option>
+        </select>
 
-    conexion = conectar_db()
-
-    conexion.execute(
-        "UPDATE tickets SET estado = ? WHERE id = ?",
-        (nuevo_estado, ticket_id)
-    )
-
-    conexion.commit()
-    conexion.close()
-
-    return redirect(url_for("tickets"))
+        <button type="submit">Actualizar</button>
+    </form>
+</td>
