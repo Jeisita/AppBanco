@@ -1,170 +1,224 @@
-jeisita@Devopsaux:~/proyecto-crud$ cat templates/tickets.html 
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tickets - HelpDesk Lite</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
 
-    <h1>Gestión de Tickets</h1>
+    <div class="layout">
 
-    <p><a href="/">Volver al inicio</a></p>
+        <aside class="sidebar">
+            <h2>☕ HelpDesk Lite</h2>
 
-    <h2>Registrar nuevo ticket</h2>
+            <nav>
+                <a href="/">⌂ Inicio</a>
+                <a href="/usuarios">♙ Usuarios</a>
+                <a href="/categorias">▤ Categorías</a>
+                <a href="/tickets" class="active">▣ Tickets</a>
+            </nav>
+        </aside>
 
-    <p>{{ error }}</p>
+        <main class="main-content">
 
-    <form method="POST">
+            <header class="page-header">
+                <h1>Gestión de tickets</h1>
+                <p>Registra, consulta y administra los incidentes de soporte técnico.</p>
+            </header>
 
-        <label>Título:</label>
-        <input type="text" name="titulo" required>
-        <br><br>
+            <!-- FORMULARIO DE REGISTRO -->
 
-        <label>Descripción:</label>
-        <textarea name="descripcion" required></textarea>
-        <br><br>
+            <section class="card">
+                <h2>Registrar nuevo ticket</h2>
 
-        <label>Prioridad:</label>
-        <select name="prioridad" required>
-            <option value="Baja">Baja</option>
-            <option value="Media">Media</option>
-            <option value="Alta">Alta</option>
-        </select>
-        <br><br>
+                {% if error %}
+                    <div class="alert">{{ error }}</div>
+                {% endif %}
 
-        <label>Usuario:</label>
-        <select name="usuario_id" required>
-            {% for usuario in usuarios %}
-            <option value="{{ usuario.id }}">
-                {{ usuario.nombre }}
-            </option>
-            {% endfor %}
-        </select>
-        <br><br>
+                <form method="POST">
 
-        <label>Categoría:</label>
-        <select name="categoria_id" required>
-            {% for categoria in categorias %}
-            <option value="{{ categoria.id }}">
-                {{ categoria.nombre }}
-            </option>
-            {% endfor %}
-        </select>
-        <br><br>
+                    <label>Título:</label>
+                    <input
+                        type="text"
+                        name="titulo"
+                        placeholder="Escribe el título del incidente"
+                        required
+                    >
 
-        <button type="submit">Registrar ticket</button>
+                    <label>Descripción:</label>
+                    <textarea
+                        name="descripcion"
+                        rows="4"
+                        placeholder="Describe el problema o solicitud"
+                        required
+                    ></textarea>
 
-    </form>
+                    <label>Prioridad:</label>
+                    <select name="prioridad" required>
+                        <option value="Baja">Baja</option>
+                        <option value="Media">Media</option>
+                        <option value="Alta">Alta</option>
+                    </select>
 
-    <hr>
+                    <label>Usuario solicitante:</label>
+                    <select name="usuario_id" required>
+                        {% for usuario in usuarios %}
+                            <option value="{{ usuario.id }}">
+                                {{ usuario.nombre }}
+                            </option>
+                        {% endfor %}
+                    </select>
 
-    <h2>Tickets registrados</h2>
-    <h3>Filtrar tickets</h3>
+                    <label>Categoría:</label>
+                    <select name="categoria_id" required>
+                        {% for categoria in categorias %}
+                            <option value="{{ categoria.id }}">
+                                {{ categoria.nombre }}
+                            </option>
+                        {% endfor %}
+                    </select>
 
-<form method="GET" action="/tickets">
+                    <button type="submit">Registrar ticket</button>
 
-    <label>Estado:</label>
+                </form>
+            </section>
 
-    <select name="estado">
-        <option value="">Todos</option>
+            <br>
 
-        <option value="Abierto"
-        {% if request.args.get('estado') == 'Abierto' %}selected{% endif %}>
-            Abierto
-        </option>
+            <!-- FILTROS -->
 
-        <option value="En proceso"
-        {% if request.args.get('estado') == 'En proceso' %}selected{% endif %}>
-            En proceso
-        </option>
+            <section class="card">
+                <h2>Consultar tickets</h2>
+                <p>Utiliza los filtros para encontrar los incidentes registrados.</p>
 
-        <option value="Resuelto"
-        {% if request.args.get('estado') == 'Resuelto' %}selected{% endif %}>
-            Resuelto
-        </option>
-    </select>
+                <form method="GET" action="/tickets">
 
-    <label>Prioridad:</label>
+                    <label>Estado:</label>
+                    <select name="estado">
+                        <option value="">Todos</option>
 
-    <select name="prioridad">
-        <option value="">Todas</option>
+                        <option value="Abierto"
+                            {% if request.args.get('estado') == 'Abierto' %}selected{% endif %}>
+                            Abierto
+                        </option>
 
-        <option value="Baja"
-        {% if request.args.get('prioridad') == 'Baja' %}selected{% endif %}>
-            Baja
-        </option>
+                        <option value="En proceso"
+                            {% if request.args.get('estado') == 'En proceso' %}selected{% endif %}>
+                            En proceso
+                        </option>
 
-        <option value="Media"
-        {% if request.args.get('prioridad') == 'Media' %}selected{% endif %}>
-            Media
-        </option>
+                        <option value="Resuelto"
+                            {% if request.args.get('estado') == 'Resuelto' %}selected{% endif %}>
+                            Resuelto
+                        </option>
+                    </select>
 
-        <option value="Alta"
-        {% if request.args.get('prioridad') == 'Alta' %}selected{% endif %}>
-            Alta
-        </option>
-    </select>
+                    <label>Prioridad:</label>
+                    <select name="prioridad">
+                        <option value="">Todas</option>
 
-    <button type="submit">Filtrar</button>
+                        <option value="Baja"
+                            {% if request.args.get('prioridad') == 'Baja' %}selected{% endif %}>
+                            Baja
+                        </option>
 
-    <a href="/tickets">Limpiar filtros</a>
+                        <option value="Media"
+                            {% if request.args.get('prioridad') == 'Media' %}selected{% endif %}>
+                            Media
+                        </option>
 
-</form>
+                        <option value="Alta"
+                            {% if request.args.get('prioridad') == 'Alta' %}selected{% endif %}>
+                            Alta
+                        </option>
+                    </select>
 
-<hr>
+                    <button type="submit">Filtrar tickets</button>
+                    <a href="/tickets" class="btn">Limpiar filtros</a>
 
-    {% if tickets %}
-    <table border="1" cellpadding="8">
-        <tr>
-            <th>ID</th>
-            <th>Título</th>
-            <th>Descripción</th>
-            <th>Prioridad</th>
-            <th>Solicitante</th>
-            <th>Categoría</th>
-            <th>Estado</th>
-        </tr>
+                </form>
+            </section>
 
-        {% for ticket in tickets %}
-        <tr>
-            <td>{{ ticket.id }}</td>
-            <td>{{ ticket.titulo }}</td>
-            <td>{{ ticket.descripcion }}</td>
-            <td>{{ ticket.prioridad }}</td>
-            <td>{{ ticket.solicitante }}</td>
-            <td>{{ ticket.categoria }}</td>
-            <td>
-    <form method="POST"
-          action="{{ url_for('actualizar_estado', ticket_id=ticket.id) }}">
+            <br>
 
-        <select name="estado">
-            <option value="Abierto"
-                {% if ticket.estado == 'Abierto' %}selected{% endif %}>
-                Abierto
-            </option>
+            <!-- LISTADO DE TICKETS -->
 
-            <option value="En proceso"
-                {% if ticket.estado == 'En proceso' %}selected{% endif %}>
-                En proceso
-            </option>
+            <section class="card">
+                <h2>Tickets registrados</h2>
 
-            <option value="Resuelto"
-                {% if ticket.estado == 'Resuelto' %}selected{% endif %}>
-                Resuelto
-            </option>
-        </select>
+                {% if tickets %}
 
-        <button type="submit">Actualizar</button>
-    </form>
-</td>
-        </tr>
-        {% endfor %}
-    </table>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Título</th>
+                                <th>Descripción</th>
+                                <th>Prioridad</th>
+                                <th>Solicitante</th>
+                                <th>Categoría</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
 
-    {% else %}
-    <p>Aún no hay tickets registrados.</p>
-    {% endif %}
+                        <tbody>
+                            {% for ticket in tickets %}
+                            <tr>
+                                <td>{{ ticket.id }}</td>
+                                <td>{{ ticket.titulo }}</td>
+                                <td>{{ ticket.descripcion }}</td>
+                                <td>{{ ticket.prioridad }}</td>
+                                <td>{{ ticket.solicitante }}</td>
+                                <td>{{ ticket.categoria }}</td>
+
+                                <td>
+                                    <form method="POST"
+                                          action="{{ url_for('actualizar_estado', ticket_id=ticket.id) }}">
+
+                                        <select name="estado">
+                                            <option value="Abierto"
+                                                {% if ticket.estado == 'Abierto' %}selected{% endif %}>
+                                                Abierto
+                                            </option>
+
+                                            <option value="En proceso"
+                                                {% if ticket.estado == 'En proceso' %}selected{% endif %}>
+                                                En proceso
+                                            </option>
+
+                                            <option value="Resuelto"
+                                                {% if ticket.estado == 'Resuelto' %}selected{% endif %}>
+                                                Resuelto
+                                            </option>
+                                        </select>
+
+                                        <button type="submit">Actualizar</button>
+
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                {% else %}
+                    <p>No se encontraron tickets con los filtros seleccionados.</p>
+                {% endif %}
+
+            </section>
+
+            <footer>
+                <p>HelpDesk Lite · Gestión de soporte técnico</p>
+            </footer>
+
+        </main>
+
+    </div>
 
 </body>
 </html>
