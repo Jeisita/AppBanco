@@ -1,52 +1,102 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Categorías - HelpDesk Lite</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
-    <h1>Categorías</h1>
 
-    <p><a href="/">Volver al inicio</a></p>
+    <div class="layout">
 
-    <h2>Crear categoría</h2>
+        <aside class="sidebar">
+            <h2>☕ HelpDesk Lite</h2>
 
-    <p>{{ error }}</p>
+            <nav>
+                <a href="/">⌂ Inicio</a>
+                <a href="/usuarios">♙ Usuarios</a>
+                <a href="/categorias" class="active">▤ Categorías</a>
+                <a href="/tickets">▣ Tickets</a>
+            </nav>
+        </aside>
 
-    <form method="POST">
-        <label>Nombre:</label>
-        <input type="text" name="nombre" required>
-        <br><br>
+        <main class="main-content">
 
-        <label>Descripción:</label>
-        <textarea name="descripcion"></textarea>
-        <br><br>
+            <header class="page-header">
+                <h1>Gestión de categorías</h1>
+                <p>Organiza los tipos de incidentes de soporte técnico.</p>
+            </header>
 
-        <button type="submit">Guardar categoría</button>
-    </form>
+            <section class="card">
+                <h2>Crear categoría</h2>
 
-    <hr>
+                {% if error %}
+                    <div class="alert">{{ error }}</div>
+                {% endif %}
 
-    <h2>Categorías registradas</h2>
+                <form method="POST">
 
-    {% if categorias %}
-    <table border="1" cellpadding="8">
-        <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Descripción</th>
-        </tr>
+                    <label>Nombre de la categoría:</label>
+                    <input
+                        type="text"
+                        name="nombre"
+                        placeholder="Ej. Hardware, Software, Redes..."
+                        required
+                    >
 
-        {% for categoria in categorias %}
-        <tr>
-            <td>{{ categoria.id }}</td>
-            <td>{{ categoria.nombre }}</td>
-            <td>{{ categoria.descripcion }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-    {% else %}
-    <p>Aún no hay categorías registradas.</p>
-    {% endif %}
+                    <label>Descripción:</label>
+                    <textarea
+                        name="descripcion"
+                        rows="4"
+                        placeholder="Describe brevemente esta categoría"
+                    ></textarea>
+
+                    <button type="submit">Guardar categoría</button>
+
+                </form>
+            </section>
+
+            <br>
+
+            <section class="card">
+                <h2>Categorías registradas</h2>
+
+                {% if categorias %}
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Descripción</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for categoria in categorias %}
+                            <tr>
+                                <td>{{ categoria.id }}</td>
+                                <td>{{ categoria.nombre }}</td>
+                                <td>{{ categoria.descripcion }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>Aún no hay categorías registradas.</p>
+                {% endif %}
+            </section>
+
+            <footer>
+                <p>HelpDesk Lite · Gestión de soporte técnico</p>
+            </footer>
+
+        </main>
+
+    </div>
+
 </body>
 </html>
