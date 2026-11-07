@@ -1,1 +1,25 @@
-sudo sqlite3 /var/lib/docker/volumes/helpdesk_data/data/helpdesk.db
+Consultar usuarios: 
+SELECT * FROM usuarios;
+
+Consultar categorías:
+SELECT * FROM categorias;
+
+Consultar tickets:
+SELECT * FROM tickets;
+
+Consultar tickets con nombres de usuarios y categorías: (relaciones entre tablas)
+SELECT
+    t.id,
+    t.titulo,
+    t.descripcion,
+    t.prioridad,
+    t.estado,
+    u.nombre AS solicitante,
+    c.nombre AS categoria,
+    t.fecha_creacion
+FROM tickets t
+INNER JOIN usuarios u ON t.usuario_id = u.id
+INNER JOIN categorias c ON t.categoria_id = c.id;
+
+
+Salir de SQLITE:
