@@ -1,3 +1,6 @@
+docker exec -it helpdesk-container python -c "import sqlite3; c=sqlite3.connect('/data/helpdesk.db'); print('Tablas:', c.execute(\"SELECT name FROM sqlite_master WHERE type='table'\").fetchall()); c.close()"
+
+
 Consultar usuarios: 
 SELECT * FROM usuarios;
 
