@@ -23,3 +23,6 @@ INNER JOIN categorias c ON t.categoria_id = c.id;
 
 
 Salir de SQLITE:
+
+
+sudo ls -lah /var/lib/docker/volumes/helpdesk_data/data
