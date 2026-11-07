@@ -1,39 +1,14 @@
+FROM python:3.12-slim
 
-<nav>
-    <a href="/" class="active">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="m3 10 9-7 9 7"/>
-            <path d="M5 9v12h14V9"/>
-            <path d="M9 21v-7h6v7"/>
-        </svg>
-        Inicio
-    </a>
+WORKDIR /app
 
-    <a href="/usuarios">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-            <circle cx="9" cy="7" r="4"/>
-            <path d="M20 21v-2a4 4 0 0 0-3-3.87"/>
-            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-        </svg>
-        Usuarios
-    </a>
+RUN pip install --no-cache-dir Flask
 
-    <a href="/categorias">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20.59 13.41 11 3.83V3H4v7h.83l9.58 9.59a2 2 0 0 0 2.83 0l3.35-3.35a2 2 0 0 0 0-2.83Z"/>
-            <circle cx="7.5" cy="7.5" r=".5"/>
-        </svg>
-        Categorías
-    </a>
+COPY app_helpdesk.py .
+COPY database.py .
+COPY templates/ templates/
+COPY static/ static/
 
-    <a href="/tickets">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M4 4h16v5a3 3 0 0 0 0 6v5H4v-5a3 3 0 0 0 0-6V4Z"/>
-            <path d="M13 4v2"/>
-            <path d="M13 10v2"/>
-            <path d="M13 16v2"/>
-        </svg>
-        Tickets
-    </a>
-</nav>
+EXPOSE 5000
+
+CMD ["python", "app_helpdesk.py"]
