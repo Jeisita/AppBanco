@@ -1,1 +1,1 @@
-docker volume inspect -f '{{ .Mountpoint }}' helpdesk_data
+sudo sqlite3 /var/lib/docker/volumes/helpdesk_data/data/helpdesk.db
