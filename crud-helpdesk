@@ -1,1 +1,1 @@
-docker exec -it helpdesk-container python -c "import sqlite3; print('SQLite disponible')"
+docker volume inspect -f '{{ .Mountpoint }}' helpdesk_data
