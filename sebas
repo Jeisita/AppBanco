@@ -1,232 +1,359 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Préstamos - TechLoan</title>
+/* =================================
+   HELPDESK LITE - ROSE CAFÉ
+================================= */
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
+:root {
+    --rosa-nude: #F7E9E7;
+    --rosa-viejo: #D8A7A0;
+    --terracota: #A87569;
+    --cafe: #8B6558;
+    --beige: #E8D7C8;
+    --crema: #FFF9F5;
+    --texto: #59443D;
+    --blanco: #FFFFFF;
+    --sombra: 0 4px 14px rgba(139, 101, 88, 0.10);
+}
 
-<body>
+* {
+    box-sizing: border-box;
+}
 
-    <div class="layout">
+body {
+    margin: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: var(--crema);
+    color: var(--texto);
+}
 
-        <aside class="sidebar">
-            <h2>💻 TechLoan</h2>
+/* Estructura principal */
 
-            <nav>
-                <a href="{{ url_for('inicio') }}">▦ Panel de control</a>
-                <a href="{{ url_for('solicitantes') }}">👥 Solicitantes</a>
-                <a href="{{ url_for('tipos_equipos') }}">🖥️ Tipos de equipos</a>
-                <a href="{{ url_for('prestamos') }}" class="active">📋 Préstamos</a>
-            </nav>
-        </aside>
+.layout {
+    display: flex;
+    min-height: 100vh;
+}
 
-        <main class="main-content">
+/* Menú lateral */
 
-            <header class="page-header">
-                <h1>Gestión de préstamos</h1>
-                <p>Registra y administra las solicitudes de equipos tecnológicos.</p>
-            </header>
+.sidebar {
+    width: 250px;
+    min-height: 100vh;
+    background: var(--rosa-nude);
+    padding: 28px 18px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+}
 
-            <!-- FORMULARIO DE REGISTRO -->
+.sidebar h2 {
+    color: var(--cafe);
+    text-align: center;
+    margin: 0 0 35px;
+}
 
-            <section class="card">
-                <h2>Nueva solicitud de préstamo</h2>
+.sidebar a {
+    display: block;
+    padding: 13px 16px;
+    margin-bottom: 9px;
+    color: var(--cafe);
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: 0.2s;
+}
 
-                {% if error %}
-                    <div class="alert">{{ error }}</div>
-                {% endif %}
+.sidebar a:hover,
+.sidebar a.active {
+    background: var(--rosa-viejo);
+    color: var(--blanco);
+}
 
-                <form method="POST">
+/* Contenido */
 
-                    <label>Equipo solicitado:</label>
-                    <input
-                        type="text"
-                        name="equipo"
-                        placeholder="Ej. Portátil Lenovo ThinkPad"
-                        required
-                    >
+.main-content {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+    padding: 35px;
+}
 
-                    <label>Motivo del préstamo:</label>
-                    <textarea
-                        name="motivo"
-                        rows="4"
-                        placeholder="Describe para qué necesitas el equipo"
-                        required
-                    ></textarea>
+h1, h2, h3 {
+    color: var(--cafe);
+}
 
-                    <label>Nivel de urgencia:</label>
-                    <select name="urgencia" required>
-                        <option value="Baja">Baja</option>
-                        <option value="Media">Media</option>
-                        <option value="Alta">Alta</option>
-                    </select>
+.page-header {
+    margin-bottom: 25px;
+}
 
-                    <label>Solicitante:</label>
-                    <select name="solicitante_id" required>
-                        <option value="">Seleccionar solicitante</option>
+/* Tarjetas */
 
-                        {% for persona in solicitantes %}
-                            <option value="{{ persona.id }}">
-                                {{ persona.nombre }}
-                            </option>
-                        {% endfor %}
-                    </select>
+.card {
+    background: var(--blanco);
+    border: 1px solid var(--beige);
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: var(--sombra);
+}
 
-                    <label>Tipo de equipo:</label>
-                    <select name="tipo_equipo_id" required>
-                        <option value="">Seleccionar tipo de equipo</option>
+/* Estadísticas */
 
-                        {% for tipo in tipos_equipos %}
-                            <option value="{{ tipo.id }}">
-                                {{ tipo.nombre }}
-                            </option>
-                        {% endfor %}
-                    </select>
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+}
 
-                    <button type="submit">Registrar préstamo</button>
+.stat-number {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--terracota);
+}
 
-                </form>
-            </section>
+/* Formularios */
 
-            <br>
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 11px 13px;
+    margin: 7px 0 16px;
+    border: 1px solid var(--beige);
+    border-radius: 9px;
+    background: var(--crema);
+    color: var(--texto);
+    font: inherit;
+}
 
-            <!-- FILTROS -->
+input:focus,
+select:focus,
+textarea:focus {
+    outline: 2px solid var(--rosa-viejo);
+    border-color: var(--terracota);
+}
 
-            <section class="card">
-                <h2>Buscar solicitudes</h2>
-                <p>Consulta los préstamos según su estado y urgencia.</p>
+label {
+    font-weight: 600;
+    color: var(--cafe);
+}
 
-                <form method="GET" action="{{ url_for('prestamos') }}">
+/* Botones */
 
-                    <label>Estado del préstamo:</label>
-                    <select name="estado">
-                        <option value="">Todos</option>
+button,
+.btn {
+    display: inline-block;
+    padding: 11px 18px;
+    border: none;
+    border-radius: 9px;
+    background: var(--rosa-viejo);
+    color: var(--blanco);
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: 0.2s;
+}
 
-                        {% for estado in ['Pendiente', 'Prestado', 'Devuelto'] %}
-                            <option value="{{ estado }}"
-                                {% if request.args.get('estado') == estado %}
-                                    selected
-                                {% endif %}>
-                                {{ estado }}
-                            </option>
-                        {% endfor %}
+button:hover,
+.btn:hover {
+    background: var(--terracota);
+}
 
-                    </select>
+/* Tablas */
 
-                    <label>Urgencia:</label>
-                    <select name="urgencia">
-                        <option value="">Todas</option>
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--blanco);
+    border-radius: 12px;
+    overflow: hidden;
+}
 
-                        {% for urgencia in ['Baja', 'Media', 'Alta'] %}
-                            <option value="{{ urgencia }}"
-                                {% if request.args.get('urgencia') == urgencia %}
-                                    selected
-                                {% endif %}>
-                                {{ urgencia }}
-                            </option>
-                        {% endfor %}
+th {
+    background: var(--rosa-nude);
+    color: var(--cafe);
+    text-align: left;
+}
 
-                    </select>
+th, td {
+    padding: 13px;
+    border-bottom: 1px solid var(--beige);
+}
 
-                    <button type="submit">Buscar préstamos</button>
+tr:hover td {
+    background: #FFFCFA;
+}
 
-                    <a href="{{ url_for('prestamos') }}" class="btn">
-                        Limpiar filtros
-                    </a>
+/* Mensajes */
 
-                </form>
-            </section>
+.alert {
+    padding: 13px 16px;
+    margin-bottom: 18px;
+    border-radius: 9px;
+    background: var(--rosa-nude);
+    color: var(--cafe);
+}
 
-            <br>
+/* Adaptación a pantallas pequeñas */
 
-            <!-- HISTORIAL DE PRESTAMOS -->
+@media (max-width: 700px) {
+    .sidebar {
+        width: 100%;
+        min-height: auto;
+        position: relative;
+    }
 
-            <section class="card">
-                <h2>Historial de préstamos</h2>
+    .layout {
+        display: block;
+    }
 
-                {% if prestamos %}
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+        padding: 20px;
+    }
+}
 
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Equipo</th>
-                                <th>Motivo</th>
-                                <th>Urgencia</th>
-                                <th>Solicitante</th>
-                                <th>Tipo de equipo</th>
-                                <th>Estado</th>
-                            </tr>
-                        </thead>
+/* =================================
+   DETALLES VISUALES ROSE CAFÉ
+================================= */
 
-                        <tbody>
-                            {% for prestamo in prestamos %}
+/* Encabezados de página */
 
-                            <tr>
-                                <td>{{ prestamo.id }}</td>
-                                <td>{{ prestamo.equipo }}</td>
-                                <td>{{ prestamo.motivo }}</td>
+.page-header h1 {
+    font-size: 30px;
+    margin-bottom: 8px;
+}
 
-                                <td>
-                                    <span class="urgencia-{{ prestamo.urgencia | lower }}">
-                                        {{ prestamo.urgencia }}
-                                    </span>
-                                </td>
+.page-header p {
+    color: var(--cafe);
+    opacity: 0.85;
+}
 
-                                <td>{{ prestamo.solicitante }}</td>
-                                <td>{{ prestamo.tipo_equipo }}</td>
+/* Tarjetas con efecto suave */
 
-                                <td>
+.card {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
 
-                                    <span class="estado-{{ prestamo.estado | lower }}">
-                                        {{ prestamo.estado }}
-                                    </span>
+.card:hover {
+    box-shadow: 0 6px 18px rgba(139, 101, 88, 0.15);
+}
 
-                                    <form method="POST"
-                                          action="{{ url_for('actualizar_estado', prestamo_id=prestamo.id) }}">
+/* Tablas adaptables */
 
-                                        <select name="estado">
+.card {
+    overflow-x: auto;
+}
 
-                                            {% for estado in ['Pendiente', 'Prestado', 'Devuelto'] %}
+table {
+    min-width: 550px;
+}
 
-                                                <option value="{{ estado }}"
-                                                    {% if prestamo.estado == estado %}
-                                                        selected
-                                                    {% endif %}>
-                                                    {{ estado }}
-                                                </option>
+/* Formularios dentro de tablas */
 
-                                            {% endfor %}
+td form {
+    min-width: 150px;
+}
 
-                                        </select>
+td select {
+    min-width: 130px;
+}
 
-                                        <button type="submit">Actualizar</button>
+/* Prioridades */
 
-                                    </form>
+.prioridad-alta {
+    background: #F3D2CC;
+    color: #934D40;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+}
 
-                                </td>
-                            </tr>
+.prioridad-media {
+    background: #F2E5D2;
+    color: #8B6558;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+}
 
-                            {% endfor %}
-                        </tbody>
-                    </table>
+.prioridad-baja {
+    background: #F7E9E7;
+    color: #A87569;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+}
 
-                {% else %}
-                    <p>No se encontraron solicitudes de préstamo.</p>
-                {% endif %}
+/* Estados de tickets */
 
-            </section>
+.estado-abierto {
+    background: #F3D2CC;
+    color: #934D40;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+}
 
-            <footer>
-                <p>TechLoan · Gestión de préstamos tecnológicos</p>
-            </footer>
+.estado-proceso {
+    background: #F2E5D2;
+    color: #8B6558;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+}
 
-        </main>
+.estado-resuelto {
+    background: #E7EDE3;
+    color: #58734F;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+}
 
-    </div>
+/* Pie de página */
 
-</body>
-</html>
+footer {
+    margin-top: 35px;
+    padding: 15px;
+    text-align: center;
+    color: var(--cafe);
+    opacity: 0.75;
+    font-size: 13px;
+}
+
+/* Menú lateral */
+
+.sidebar {
+    box-shadow: 3px 0 12px rgba(139, 101, 88, 0.06);
+}
+
+.sidebar h2 {
+    font-size: 21px;
+}
+
+/* Espaciado de botones */
+
+button {
+    margin-top: 5px;
+}
+
+/* Ajustes para móviles */
+
+@media (max-width: 700px) {
+    .sidebar {
+        box-shadow: none;
+    }
+
+    .sidebar nav {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .sidebar a {
+        margin: 4px;
+    }
+
+    .page-header h1 {
+        font-size: 24px;
+    }
+}
