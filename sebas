@@ -1,0 +1,235 @@
+jeisita@Devopsaux:~/proyecto-prestamos$ cat ~/proyecto-prestamos/app_helpdesk.py
+from flask import Flask, render_template, request, redirect, url_for
+from database import conectar_db, crear_tablas
+
+app = Flask(__name__)
+
+crear_tablas()
+
+
+@app.route("/")
+def inicio():
+    conexion = conectar_db()
+
+    estadisticas = conexion.execute("""
+        SELECT
+            COUNT(*),
+            SUM(CASE WHEN estado = 'Abierto' THEN 1 ELSE 0 END),
+            SUM(CASE WHEN estado = 'En proceso' THEN 1 ELSE 0 END),
+            SUM(CASE WHEN estado = 'Resuelto' THEN 1 ELSE 0 END)
+        FROM tickets
+    """).fetchone()
+
+    conexion.close()
+
+    return render_template(
+        "index.html",
+        total_tickets=estadisticas[0] or 0,
+        tickets_abiertos=estadisticas[1] or 0,
+        tickets_proceso=estadisticas[2] or 0,
+        tickets_resueltos=estadisticas[3] or 0
+    )
+
+
+@app.route("/usuarios", methods=["GET", "POST"])
+def usuarios():
+    error = ""
+
+    if request.method == "POST":
+        nombre = request.form.get("nombre", "").strip()
+        correo = request.form.get("correo", "").strip()
+
+        if not nombre or not correo:
+            error = "Debes completar todos los campos."
+        else:
+            conexion = conectar_db()
+
+            try:
+                conexion.execute(
+                    "INSERT INTO usuarios (nombre, correo) VALUES (?, ?)",
+                    (nombre, correo)
+                )
+
+                conexion.commit()
+
+                return redirect(url_for("usuarios"))
+
+            except Exception:
+                conexion.rollback()
+                error = "Ese correo ya existe o los datos no son válidos."
+
+            finally:
+                conexion.close()
+
+    conexion = conectar_db()
+
+    lista_usuarios = conexion.execute(
+        "SELECT * FROM usuarios ORDER BY id DESC"
+    ).fetchall()
+
+    conexion.close()
+
+    return render_template(
+        "usuarios.html",
+        usuarios=lista_usuarios,
+        error=error
+    )
+
+
+@app.route("/categorias", methods=["GET", "POST"])
+def categorias():
+    error = ""
+
+    if request.method == "POST":
+        nombre = request.form.get("nombre", "").strip()
+        descripcion = request.form.get("descripcion", "").strip()
+
+        if not nombre:
+            error = "El nombre es obligatorio."
+        else:
+            conexion = conectar_db()
+
+            try:
+                conexion.execute(
+                    "INSERT INTO categorias (nombre, descripcion) VALUES (?, ?)",
+                    (nombre, descripcion)
+                )
+
+                conexion.commit()
+
+                return redirect(url_for("categorias"))
+
+            except Exception:
+                conexion.rollback()
+                error = "La categoría ya existe o los datos no son válidos."
+
+            finally:
+                conexion.close()
+
+    conexion = conectar_db()
+
+    lista_categorias = conexion.execute(
+        "SELECT * FROM categorias ORDER BY id DESC"
+    ).fetchall()
+
+    conexion.close()
+
+    return render_template(
+        "categorias.html",
+        categorias=lista_categorias,
+        error=error
+    )
+
+
+@app.route("/tickets", methods=["GET", "POST"])
+def tickets():
+    error = ""
+
+    conexion = conectar_db()
+
+    usuarios = conexion.execute(
+        "SELECT * FROM usuarios ORDER BY nombre"
+    ).fetchall()
+
+    categorias = conexion.execute(
+        "SELECT * FROM categorias ORDER BY nombre"
+    ).fetchall()
+
+    if request.method == "POST":
+        titulo = request.form.get("titulo", "").strip()
+        descripcion = request.form.get("descripcion", "").strip()
+        prioridad = request.form.get("prioridad")
+        usuario_id = request.form.get("usuario_id")
+        categoria_id = request.form.get("categoria_id")
+
+        if not titulo or not descripcion or not usuario_id or not categoria_id:
+            error = "Debes completar todos los campos."
+
+        else:
+            try:
+                conexion.execute(
+                    """INSERT INTO tickets
+                    (titulo, descripcion, prioridad, usuario_id, categoria_id)
+                    VALUES (?, ?, ?, ?, ?)""",
+                    (titulo, descripcion, prioridad, usuario_id, categoria_id)
+                )
+
+                conexion.commit()
+                conexion.close()
+
+                return redirect(url_for("tickets"))
+
+            except Exception:
+                conexion.rollback()
+                error = "No se pudo registrar el ticket."
+
+    # Filtros de tickets
+    estado_filtro = request.args.get("estado", "")
+    prioridad_filtro = request.args.get("prioridad", "")
+
+    consulta = """
+        SELECT
+            tickets.*,
+            usuarios.nombre AS solicitante,
+            categorias.nombre AS categoria
+        FROM tickets
+        JOIN usuarios
+            ON tickets.usuario_id = usuarios.id
+        JOIN categorias
+            ON tickets.categoria_id = categorias.id
+        WHERE 1=1
+    """
+
+    parametros = []
+
+    if estado_filtro:
+        consulta += " AND tickets.estado = ?"
+        parametros.append(estado_filtro)
+
+    if prioridad_filtro:
+        consulta += " AND tickets.prioridad = ?"
+        parametros.append(prioridad_filtro)
+
+    consulta += " ORDER BY tickets.id DESC"
+
+    lista_tickets = conexion.execute(
+        consulta,
+        parametros
+    ).fetchall()
+
+    conexion.close()
+
+    return render_template(
+        "tickets.html",
+        tickets=lista_tickets,
+        usuarios=usuarios,
+        categorias=categorias,
+        error=error
+    )
+
+
+@app.route("/tickets/<int:ticket_id>/estado", methods=["POST"])
+def actualizar_estado(ticket_id):
+
+    nuevo_estado = request.form.get("estado")
+
+    estados_validos = ["Abierto", "En proceso", "Resuelto"]
+
+    if nuevo_estado not in estados_validos:
+        return redirect(url_for("tickets"))
+
+    conexion = conectar_db()
+
+    conexion.execute(
+        "UPDATE tickets SET estado = ? WHERE id = ?",
+        (nuevo_estado, ticket_id)
+    )
+
+    conexion.commit()
+    conexion.close()
+
+    return redirect(url_for("tickets"))
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=False)
