@@ -1,1 +1,1 @@
-docker run -d --name techloan-container -p 5001:5001 -e TECHLOAN_DATABASE=/data/techloan.db -v techloan_data:/data techloan:latest
+docker run -d --name techloan-container -p 5001:5001 -e TECHLOAN_DATABASE=/data/techloan.db -v techloan_data:/data be5b2d7e37ed
