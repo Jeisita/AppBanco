@@ -1,10 +1,9 @@
-jeisita@Devopsaux:~/proyecto-prestamos$ cat templates/usuarios.html
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Usuarios - HelpDesk Lite</title>
+    <title>Solicitantes - TechLoan</title>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
@@ -14,25 +13,25 @@ jeisita@Devopsaux:~/proyecto-prestamos$ cat templates/usuarios.html
     <div class="layout">
 
         <aside class="sidebar">
-            <h2>☕ HelpDesk Lite</h2>
+            <h2>💻 TechLoan</h2>
 
             <nav>
-                <a href="/">⌂ Inicio</a>
-                <a href="/usuarios" class="active">♙ Usuarios</a>
-                <a href="/categorias">▤ Categorías</a>
-                <a href="/tickets">▣ Tickets</a>
+                <a href="{{ url_for('inicio') }}">▦ Panel de control</a>
+                <a href="{{ url_for('solicitantes') }}" class="active">👥 Solicitantes</a>
+                <a href="{{ url_for('tipos_equipos') }}">🖥️ Tipos de equipos</a>
+                <a href="{{ url_for('prestamos') }}">📋 Préstamos</a>
             </nav>
         </aside>
 
         <main class="main-content">
 
             <header class="page-header">
-                <h1>Gestión de usuarios</h1>
-                <p>Registra y consulta los usuarios del sistema.</p>
+                <h1>Gestión de solicitantes</h1>
+                <p>Administra las personas autorizadas para solicitar equipos tecnológicos.</p>
             </header>
 
             <section class="card">
-                <h2>Registrar usuario</h2>
+                <h2>Nuevo solicitante</h2>
 
                 {% if error %}
                     <div class="alert">{{ error }}</div>
@@ -44,7 +43,7 @@ jeisita@Devopsaux:~/proyecto-prestamos$ cat templates/usuarios.html
                     <input
                         type="text"
                         name="nombre"
-                        placeholder="Escribe el nombre del usuario"
+                        placeholder="Nombre del solicitante"
                         required
                     >
 
@@ -52,11 +51,11 @@ jeisita@Devopsaux:~/proyecto-prestamos$ cat templates/usuarios.html
                     <input
                         type="email"
                         name="correo"
-                        placeholder="usuario@correo.com"
+                        placeholder="persona@correo.com"
                         required
                     >
 
-                    <button type="submit">Guardar usuario</button>
+                    <button type="submit">Registrar solicitante</button>
 
                 </form>
             </section>
@@ -64,37 +63,37 @@ jeisita@Devopsaux:~/proyecto-prestamos$ cat templates/usuarios.html
             <br>
 
             <section class="card">
-                <h2>Usuarios registrados</h2>
+                <h2>Directorio de solicitantes</h2>
 
-                {% if usuarios %}
+                {% if solicitantes %}
                     <table>
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Nombre</th>
+                                <th>Nombre completo</th>
                                 <th>Correo electrónico</th>
                                 <th>Fecha de registro</th>
                             </tr>
                         </thead>
 
                         <tbody>
-                            {% for usuario in usuarios %}
+                            {% for solicitante in solicitantes %}
                             <tr>
-                                <td>{{ usuario.id }}</td>
-                                <td>{{ usuario.nombre }}</td>
-                                <td>{{ usuario.correo }}</td>
-                                <td>{{ usuario.fecha_registro }}</td>
+                                <td>{{ solicitante.id }}</td>
+                                <td>{{ solicitante.nombre }}</td>
+                                <td>{{ solicitante.correo }}</td>
+                                <td>{{ solicitante.fecha_registro }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
                     </table>
                 {% else %}
-                    <p>Aún no hay usuarios registrados.</p>
+                    <p>No hay solicitantes registrados.</p>
                 {% endif %}
             </section>
 
             <footer>
-                <p>HelpDesk Lite · Gestión de soporte técnico</p>
+                <p>TechLoan · Gestión de préstamos tecnológicos</p>
             </footer>
 
         </main>
