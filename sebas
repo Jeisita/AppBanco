@@ -1,13 +1,12 @@
-jeisita@Devopsaux:~/proyecto-prestamos$ cat database.py
 import os
 import sqlite3
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
-DATABASE = Path(
-    os.environ.get("HELPDESK_DATABASE", str(BASE_DIR / "helpdesk.db"))
-)
 
+DATABASE = Path(
+    os.environ.get("TECHLOAN_DATABASE", str(BASE_DIR / "techloan.db"))
+)
 
 
 def conectar_db():
@@ -22,32 +21,32 @@ def crear_tablas():
 
     try:
         conexion.executescript("""
-            CREATE TABLE IF NOT EXISTS usuarios (
+            CREATE TABLE IF NOT EXISTS solicitantes (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 nombre TEXT NOT NULL,
                 correo TEXT NOT NULL COLLATE NOCASE UNIQUE,
                 fecha_registro TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
             );
 
-            CREATE TABLE IF NOT EXISTS categorias (
+            CREATE TABLE IF NOT EXISTS tipos_equipos (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 nombre TEXT NOT NULL COLLATE NOCASE UNIQUE,
                 descripcion TEXT
             );
 
-            CREATE TABLE IF NOT EXISTS tickets (
+            CREATE TABLE IF NOT EXISTS prestamos (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                titulo TEXT NOT NULL,
-                descripcion TEXT NOT NULL,
-                prioridad TEXT NOT NULL
-                    CHECK (prioridad IN ('Baja', 'Media', 'Alta')),
-                estado TEXT NOT NULL DEFAULT 'Abierto'
-                    CHECK (estado IN ('Abierto', 'En proceso', 'Resuelto')),
-                fecha_creacion TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                usuario_id INTEGER NOT NULL,
-                categoria_id INTEGER NOT NULL,
-                FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
-                FOREIGN KEY (categoria_id) REFERENCES categorias(id)
+                equipo TEXT NOT NULL,
+                motivo TEXT NOT NULL,
+                urgencia TEXT NOT NULL
+                    CHECK (urgencia IN ('Baja', 'Media', 'Alta')),
+                estado TEXT NOT NULL DEFAULT 'Pendiente'
+                    CHECK (estado IN ('Pendiente', 'Prestado', 'Devuelto')),
+                fecha_solicitud TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                solicitante_id INTEGER NOT NULL,
+                tipo_equipo_id INTEGER NOT NULL,
+                FOREIGN KEY (solicitante_id) REFERENCES solicitantes(id),
+                FOREIGN KEY (tipo_equipo_id) REFERENCES tipos_equipos(id)
             );
         """)
         conexion.commit()
