@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tipos de equipos - TechLoan</title>
+    <title>Tickets - HelpDesk Lite</title>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
@@ -13,25 +13,27 @@
     <div class="layout">
 
         <aside class="sidebar">
-            <h2>💻 TechLoan</h2>
+            <h2>☕ HelpDesk Lite</h2>
 
             <nav>
-                <a href="{{ url_for('inicio') }}">▦ Panel de control</a>
-                <a href="{{ url_for('solicitantes') }}">👥 Solicitantes</a>
-                <a href="{{ url_for('tipos_equipos') }}" class="active">🖥️ Tipos de equipos</a>
-                <a href="{{ url_for('prestamos') }}">📋 Préstamos</a>
+                <a href="/">⌂ Inicio</a>
+                <a href="/usuarios">♙ Usuarios</a>
+                <a href="/categorias">▤ Categorías</a>
+                <a href="/tickets" class="active">▣ Tickets</a>
             </nav>
         </aside>
 
         <main class="main-content">
 
             <header class="page-header">
-                <h1>Tipos de equipos tecnológicos</h1>
-                <p>Clasifica los equipos que pueden ser solicitados en préstamo.</p>
+                <h1>Gestión de tickets</h1>
+                <p>Registra, consulta y administra los incidentes de soporte técnico.</p>
             </header>
 
+            <!-- FORMULARIO DE REGISTRO -->
+
             <section class="card">
-                <h2>Registrar tipo de equipo</h2>
+                <h2>Registrar nuevo ticket</h2>
 
                 {% if error %}
                     <div class="alert">{{ error }}</div>
@@ -39,11 +41,11 @@
 
                 <form method="POST">
 
-                    <label>Nombre del tipo de equipo:</label>
+                    <label>Título:</label>
                     <input
                         type="text"
-                        name="nombre"
-                        placeholder="Ej. Portátiles, proyectores, tablets..."
+                        name="titulo"
+                        placeholder="Escribe el título del incidente"
                         required
                     >
 
@@ -51,46 +53,181 @@
                     <textarea
                         name="descripcion"
                         rows="4"
-                        placeholder="Describe las características del tipo de equipo"
+                        placeholder="Describe el problema o solicitud"
+                        required
                     ></textarea>
 
-                    <button type="submit">Registrar tipo de equipo</button>
+                    <label>Prioridad:</label>
+                    <select name="prioridad" required>
+                        <option value="Baja">Baja</option>
+                        <option value="Media">Media</option>
+                        <option value="Alta">Alta</option>
+                    </select>
+
+                    <label>Usuario solicitante:</label>
+                    <select name="usuario_id" required>
+                        {% for usuario in usuarios %}
+                            <option value="{{ usuario.id }}">
+                                {{ usuario.nombre }}
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    <label>Categoría:</label>
+                    <select name="categoria_id" required>
+                        {% for categoria in categorias %}
+                            <option value="{{ categoria.id }}">
+                                {{ categoria.nombre }}
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    <button type="submit">Registrar ticket</button>
 
                 </form>
             </section>
 
             <br>
 
-            <section class="card">
-                <h2>Tipos de equipos registrados</h2>
+            <!-- FILTROS -->
 
-                {% if tipos_equipos %}
+            <section class="card">
+                <h2>Consultar tickets</h2>
+                <p>Utiliza los filtros para encontrar los incidentes registrados.</p>
+
+                <form method="GET" action="/tickets">
+
+                    <label>Estado:</label>
+                    <select name="estado">
+                        <option value="">Todos</option>
+
+                        <option value="Abierto"
+                            {% if request.args.get('estado') == 'Abierto' %}selected{% endif %}>
+                            Abierto
+                        </option>
+
+                        <option value="En proceso"
+                            {% if request.args.get('estado') == 'En proceso' %}selected{% endif %}>
+                            En proceso
+                        </option>
+
+                        <option value="Resuelto"
+                            {% if request.args.get('estado') == 'Resuelto' %}selected{% endif %}>
+                            Resuelto
+                        </option>
+                    </select>
+
+                    <label>Prioridad:</label>
+                    <select name="prioridad">
+                        <option value="">Todas</option>
+
+                        <option value="Baja"
+                            {% if request.args.get('prioridad') == 'Baja' %}selected{% endif %}>
+                            Baja
+                        </option>
+
+                        <option value="Media"
+                            {% if request.args.get('prioridad') == 'Media' %}selected{% endif %}>
+                            Media
+                        </option>
+
+                        <option value="Alta"
+                            {% if request.args.get('prioridad') == 'Alta' %}selected{% endif %}>
+                            Alta
+                        </option>
+                    </select>
+
+                    <button type="submit">Filtrar tickets</button>
+                    <a href="/tickets" class="btn">Limpiar filtros</a>
+
+                </form>
+            </section>
+
+            <br>
+
+            <!-- LISTADO DE TICKETS -->
+
+            <section class="card">
+                <h2>Tickets registrados</h2>
+
+                {% if tickets %}
+
                     <table>
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Tipo de equipo</th>
+                                <th>Título</th>
                                 <th>Descripción</th>
+                                <th>Prioridad</th>
+                                <th>Solicitante</th>
+                                <th>Categoría</th>
+                                <th>Estado</th>
                             </tr>
                         </thead>
 
                         <tbody>
-                            {% for tipo in tipos_equipos %}
+                            {% for ticket in tickets %}
                             <tr>
-                                <td>{{ tipo.id }}</td>
-                                <td>{{ tipo.nombre }}</td>
-                                <td>{{ tipo.descripcion }}</td>
+                                <td>{{ ticket.id }}</td>
+                                <td>{{ ticket.titulo }}</td>
+                                <td>{{ ticket.descripcion }}</td>
+                                <td>
+    <span class="{% if ticket.prioridad == 'Alta' %}
+                    prioridad-alta
+                 {% elif ticket.prioridad == 'Media' %}
+                    prioridad-media
+                 {% else %}
+                    prioridad-baja
+                 {% endif %}">
+        {{ ticket.prioridad }}
+    </span>
+</td>
+
+
+                                <td>{{ ticket.solicitante }}</td>
+                                <td>{{ ticket.categoria }}</td>
+
+                                <td>
+                                <span class="{% if ticket.estado == 'Abierto' %}estado-abierto{% elif ticket.estado == 'En proceso' %}estado-proceso{% else %}estado-resuelto{% endif %}">
+    {{ ticket.estado }}
+</span>
+                                    <form method="POST"
+                                          action="{{ url_for('actualizar_estado', ticket_id=ticket.id) }}">
+
+                                        <select name="estado">
+                                            <option value="Abierto"
+                                                {% if ticket.estado == 'Abierto' %}selected{% endif %}>
+                                                Abierto
+                                            </option>
+
+                                            <option value="En proceso"
+                                                {% if ticket.estado == 'En proceso' %}selected{% endif %}>
+                                                En proceso
+                                            </option>
+
+                                            <option value="Resuelto"
+                                                {% if ticket.estado == 'Resuelto' %}selected{% endif %}>
+                                                Resuelto
+                                            </option>
+                                        </select>
+
+                                        <button type="submit">Actualizar</button>
+
+                                    </form>
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>
                     </table>
+
                 {% else %}
-                    <p>No hay tipos de equipos registrados.</p>
+                    <p>No se encontraron tickets con los filtros seleccionados.</p>
                 {% endif %}
+
             </section>
 
             <footer>
-                <p>TechLoan · Gestión de préstamos tecnológicos</p>
+                <p>HelpDesk Lite · Gestión de soporte técnico</p>
             </footer>
 
         </main>
