@@ -1,10 +1,17 @@
-SELECT
-    p.id,
-    p.equipo,
-    s.nombre AS solicitante,
-    t.nombre AS tipo_equipo,
-    p.urgencia,
-    p.estado
-FROM prestamos p
-INNER JOIN solicitantes s ON p.solicitante_id = s.id
-INNER JOIN tipos_equipos t ON p.tipo_equipo_id = t.id;
+FROM python:3.12-slim
+
+WORKDIR /app
+
+RUN pip install --no-cache-dir Flask
+
+RUN apt-get update && apt-get install -y sqlite3 \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY app_helpdesk.py .
+COPY database.py .
+COPY templates/ templates/
+COPY static/ static/
+
+EXPOSE 5001
+
+CMD ["python", "app_helpdesk.py"]
