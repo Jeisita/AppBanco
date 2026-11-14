@@ -1,17 +1,18 @@
 /* =================================
-   HELPDESK LITE - ROSE CAFÉ
+   TECHLOAN - ESTILO TECNOLÓGICO
 ================================= */
 
 :root {
-    --rosa-nude: #F7E9E7;
-    --rosa-viejo: #D8A7A0;
-    --terracota: #A87569;
-    --cafe: #8B6558;
-    --beige: #E8D7C8;
-    --crema: #FFF9F5;
-    --texto: #59443D;
+    --azul-oscuro: #0F172A;
+    --azul: #2563EB;
+    --azul-hover: #1D4ED8;
+    --celeste: #38BDF8;
+    --fondo: #F1F5F9;
     --blanco: #FFFFFF;
-    --sombra: 0 4px 14px rgba(139, 101, 88, 0.10);
+    --texto: #334155;
+    --secundario: #64748B;
+    --borde: #E2E8F0;
+    --sombra: 0 4px 15px rgba(15, 23, 42, 0.08);
 }
 
 * {
@@ -21,7 +22,7 @@
 body {
     margin: 0;
     font-family: "Segoe UI", Arial, sans-serif;
-    background: var(--crema);
+    background: var(--fondo);
     color: var(--texto);
 }
 
@@ -37,38 +38,40 @@ body {
 .sidebar {
     width: 250px;
     min-height: 100vh;
-    background: var(--rosa-nude);
-    padding: 28px 18px;
+    background: var(--azul-oscuro);
+    padding: 30px 18px;
     position: fixed;
     top: 0;
     left: 0;
     bottom: 0;
+    overflow-y: auto;
 }
 
 .sidebar h2 {
-    color: var(--cafe);
+    color: var(--blanco);
+    font-size: 24px;
     text-align: center;
-    margin: 0 0 35px;
+    margin: 0 0 40px;
 }
 
 .sidebar a {
     display: block;
-    padding: 13px 16px;
-    margin-bottom: 9px;
-    color: var(--cafe);
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    color: #CBD5E1;
     text-decoration: none;
-    border-radius: 10px;
+    border-radius: 8px;
     font-weight: 600;
     transition: 0.2s;
 }
 
 .sidebar a:hover,
 .sidebar a.active {
-    background: var(--rosa-viejo);
+    background: var(--azul);
     color: var(--blanco);
 }
 
-/* Contenido */
+/* Contenido principal */
 
 .main-content {
     margin-left: 250px;
@@ -77,35 +80,60 @@ body {
 }
 
 h1, h2, h3 {
-    color: var(--cafe);
+    color: var(--azul-oscuro);
 }
 
 .page-header {
-    margin-bottom: 25px;
+    margin-bottom: 30px;
+}
+
+.page-header h1 {
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+
+.page-header p {
+    color: var(--secundario);
 }
 
 /* Tarjetas */
 
 .card {
     background: var(--blanco);
-    border: 1px solid var(--beige);
-    border-radius: 14px;
-    padding: 22px;
+    border: 1px solid var(--borde);
+    border-radius: 12px;
+    padding: 24px;
     box-shadow: var(--sombra);
+    overflow-x: auto;
+    transition: box-shadow 0.2s;
+}
+
+.card:hover {
+    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.12);
 }
 
 /* Estadísticas */
 
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
     gap: 20px;
 }
 
+.stats-grid .card {
+    border-top: 4px solid var(--azul);
+}
+
+.stats-grid h3 {
+    font-size: 16px;
+    color: var(--secundario);
+}
+
 .stat-number {
-    font-size: 32px;
+    font-size: 36px;
     font-weight: 700;
-    color: var(--terracota);
+    color: var(--azul);
+    margin: 15px 0;
 }
 
 /* Formularios */
@@ -114,11 +142,11 @@ input,
 select,
 textarea {
     width: 100%;
-    padding: 11px 13px;
-    margin: 7px 0 16px;
-    border: 1px solid var(--beige);
-    border-radius: 9px;
-    background: var(--crema);
+    padding: 12px 14px;
+    margin: 8px 0 18px;
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    background: #F8FAFC;
     color: var(--texto);
     font: inherit;
 }
@@ -126,13 +154,13 @@ textarea {
 input:focus,
 select:focus,
 textarea:focus {
-    outline: 2px solid var(--rosa-viejo);
-    border-color: var(--terracota);
+    outline: 2px solid var(--celeste);
+    border-color: var(--azul);
 }
 
 label {
     font-weight: 600;
-    color: var(--cafe);
+    color: var(--azul-oscuro);
 }
 
 /* Botones */
@@ -140,10 +168,10 @@ label {
 button,
 .btn {
     display: inline-block;
-    padding: 11px 18px;
+    padding: 11px 19px;
     border: none;
-    border-radius: 9px;
-    background: var(--rosa-viejo);
+    border-radius: 8px;
+    background: var(--azul);
     color: var(--blanco);
     font-weight: 600;
     text-decoration: none;
@@ -151,103 +179,38 @@ button,
     transition: 0.2s;
 }
 
+button {
+    margin-top: 5px;
+}
+
 button:hover,
 .btn:hover {
-    background: var(--terracota);
+    background: var(--azul-hover);
 }
 
 /* Tablas */
 
 table {
     width: 100%;
+    min-width: 550px;
     border-collapse: collapse;
     background: var(--blanco);
-    border-radius: 12px;
-    overflow: hidden;
 }
 
 th {
-    background: var(--rosa-nude);
-    color: var(--cafe);
+    background: #E2E8F0;
+    color: var(--azul-oscuro);
     text-align: left;
 }
 
 th, td {
-    padding: 13px;
-    border-bottom: 1px solid var(--beige);
+    padding: 14px;
+    border-bottom: 1px solid var(--borde);
 }
 
 tr:hover td {
-    background: #FFFCFA;
+    background: #F8FAFC;
 }
-
-/* Mensajes */
-
-.alert {
-    padding: 13px 16px;
-    margin-bottom: 18px;
-    border-radius: 9px;
-    background: var(--rosa-nude);
-    color: var(--cafe);
-}
-
-/* Adaptación a pantallas pequeñas */
-
-@media (max-width: 700px) {
-    .sidebar {
-        width: 100%;
-        min-height: auto;
-        position: relative;
-    }
-
-    .layout {
-        display: block;
-    }
-
-    .main-content {
-        margin-left: 0;
-        width: 100%;
-        padding: 20px;
-    }
-}
-
-/* =================================
-   DETALLES VISUALES ROSE CAFÉ
-================================= */
-
-/* Encabezados de página */
-
-.page-header h1 {
-    font-size: 30px;
-    margin-bottom: 8px;
-}
-
-.page-header p {
-    color: var(--cafe);
-    opacity: 0.85;
-}
-
-/* Tarjetas con efecto suave */
-
-.card {
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.card:hover {
-    box-shadow: 0 6px 18px rgba(139, 101, 88, 0.15);
-}
-
-/* Tablas adaptables */
-
-.card {
-    overflow-x: auto;
-}
-
-table {
-    min-width: 550px;
-}
-
-/* Formularios dentro de tablas */
 
 td form {
     min-width: 150px;
@@ -257,56 +220,60 @@ td select {
     min-width: 130px;
 }
 
-/* Prioridades */
+/* Mensajes de error */
 
-.prioridad-alta {
-    background: #F3D2CC;
-    color: #934D40;
-    padding: 5px 10px;
-    border-radius: 20px;
-    font-weight: 600;
+.alert {
+    padding: 14px 16px;
+    margin-bottom: 18px;
+    border-radius: 8px;
+    background: #FEE2E2;
+    color: #991B1B;
 }
 
-.prioridad-media {
-    background: #F2E5D2;
-    color: #8B6558;
-    padding: 5px 10px;
+/* Etiquetas de urgencia y estado */
+
+.urgencia-alta,
+.urgencia-media,
+.urgencia-baja,
+.estado-pendiente,
+.estado-prestado,
+.estado-devuelto {
+    display: inline-block;
+    padding: 6px 12px;
     border-radius: 20px;
+    font-size: 13px;
     font-weight: 600;
+    white-space: nowrap;
 }
 
-.prioridad-baja {
-    background: #F7E9E7;
-    color: #A87569;
-    padding: 5px 10px;
-    border-radius: 20px;
-    font-weight: 600;
+.urgencia-alta {
+    background: #FEE2E2;
+    color: #B91C1C;
 }
 
-/* Estados de tickets */
-
-.estado-abierto {
-    background: #F3D2CC;
-    color: #934D40;
-    padding: 5px 10px;
-    border-radius: 20px;
-    font-weight: 600;
+.urgencia-media {
+    background: #FEF3C7;
+    color: #92400E;
 }
 
-.estado-proceso {
-    background: #F2E5D2;
-    color: #8B6558;
-    padding: 5px 10px;
-    border-radius: 20px;
-    font-weight: 600;
+.urgencia-baja {
+    background: #DCFCE7;
+    color: #166534;
 }
 
-.estado-resuelto {
-    background: #E7EDE3;
-    color: #58734F;
-    padding: 5px 10px;
-    border-radius: 20px;
-    font-weight: 600;
+.estado-pendiente {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+.estado-prestado {
+    background: #DBEAFE;
+    color: #1D4ED8;
+}
+
+.estado-devuelto {
+    background: #DCFCE7;
+    color: #166534;
 }
 
 /* Pie de página */
@@ -315,32 +282,22 @@ footer {
     margin-top: 35px;
     padding: 15px;
     text-align: center;
-    color: var(--cafe);
-    opacity: 0.75;
+    color: var(--secundario);
     font-size: 13px;
 }
 
-/* Menú lateral */
-
-.sidebar {
-    box-shadow: 3px 0 12px rgba(139, 101, 88, 0.06);
-}
-
-.sidebar h2 {
-    font-size: 21px;
-}
-
-/* Espaciado de botones */
-
-button {
-    margin-top: 5px;
-}
-
-/* Ajustes para móviles */
+/* Diseño adaptable a dispositivos móviles */
 
 @media (max-width: 700px) {
+
+    .layout {
+        display: block;
+    }
+
     .sidebar {
-        box-shadow: none;
+        width: 100%;
+        min-height: auto;
+        position: relative;
     }
 
     .sidebar nav {
@@ -351,6 +308,12 @@ button {
 
     .sidebar a {
         margin: 4px;
+    }
+
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+        padding: 20px;
     }
 
     .page-header h1 {
