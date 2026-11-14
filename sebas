@@ -1,10 +1,9 @@
-jeisita@Devopsaux:~/proyecto-prestamos$ cat templates/index.html
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HelpDesk Lite - Dashboard</title>
+    <title>TechLoan - Panel de control</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
@@ -13,83 +12,61 @@ jeisita@Devopsaux:~/proyecto-prestamos$ cat templates/index.html
     <div class="layout">
 
         <aside class="sidebar">
-            <h2>☕ HelpDesk Lite</h2>
+            <h2>💻 TechLoan</h2>
 
-            
-<nav>
-    <a href="/" class="active">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="m3 10 9-7 9 7"/>
-            <path d="M5 9v12h14V9"/>
-            <path d="M9 21v-7h6v7"/>
-        </svg>
-        Inicio
-    </a>
+            <nav>
+                <a href="{{ url_for('inicio') }}" class="active">
+                    ▦ Panel de control
+                </a>
 
-    <a href="/usuarios">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-            <circle cx="9" cy="7" r="4"/>
-            <path d="M20 21v-2a4 4 0 0 0-3-3.87"/>
-            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-        </svg>
-        Usuarios
-    </a>
+                <a href="{{ url_for('solicitantes') }}">
+                    👥 Solicitantes
+                </a>
 
-    <a href="/categorias">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20.59 13.41 11 3.83V3H4v7h.83l9.58 9.59a2 2 0 0 0 2.83 0l3.35-3.35a2 2 0 0 0 0-2.83Z"/>
-            <circle cx="7.5" cy="7.5" r=".5"/>
-        </svg>
-        Categorías
-    </a>
+                <a href="{{ url_for('tipos_equipos') }}">
+                    🖥️ Tipos de equipos
+                </a>
 
-    <a href="/tickets">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M4 4h16v5a3 3 0 0 0 0 6v5H4v-5a3 3 0 0 0 0-6V4Z"/>
-            <path d="M13 4v2"/>
-            <path d="M13 10v2"/>
-            <path d="M13 16v2"/>
-        </svg>
-        Tickets
-    </a>
-</nav>
+                <a href="{{ url_for('prestamos') }}">
+                    📋 Préstamos
+                </a>
+            </nav>
 
         </aside>
 
         <main class="main-content">
 
             <header class="page-header">
-                <h1>Panel principal</h1>
-                <p>Bienvenida al sistema de gestión de soporte técnico.</p>
+                <h1>Control de préstamos</h1>
+                <p>Sistema de gestión de préstamos de equipos tecnológicos.</p>
             </header>
 
             <section class="stats-grid">
 
                 <div class="card">
-                    <h3>Total de tickets</h3>
-                    <p class="stat-number">{{ total_tickets }}</p>
+                    <h3>Total de solicitudes</h3>
+                    <p class="stat-number">{{ total_prestamos }}</p>
                 </div>
 
                 <div class="card">
-                    <h3>Tickets abiertos</h3>
-                    <p class="stat-number">{{ tickets_abiertos }}</p>
+                    <h3>Solicitudes pendientes</h3>
+                    <p class="stat-number">{{ prestamos_pendientes }}</p>
                 </div>
 
                 <div class="card">
-                    <h3>En proceso</h3>
-                    <p class="stat-number">{{ tickets_proceso }}</p>
+                    <h3>Equipos prestados</h3>
+                    <p class="stat-number">{{ prestamos_activos }}</p>
                 </div>
 
                 <div class="card">
-                    <h3>Tickets resueltos</h3>
-                    <p class="stat-number">{{ tickets_resueltos }}</p>
+                    <h3>Equipos devueltos</h3>
+                    <p class="stat-number">{{ prestamos_devueltos }}</p>
                 </div>
 
             </section>
 
             <footer>
-                <p>HelpDesk Lite · Gestión de soporte técnico</p>
+                <p>TechLoan · Gestión de préstamos tecnológicos</p>
             </footer>
 
         </main>
