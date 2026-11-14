@@ -1,17 +1,6 @@
-FROM python:3.12-slim
-
-WORKDIR /app
-
-RUN pip install --no-cache-dir Flask
-
-RUN apt-get update && apt-get install -y sqlite3 \
-    && rm -rf /var/lib/apt/lists/*
-
-COPY app_helpdesk.py .
-COPY database.py .
-COPY templates/ templates/
-COPY static/ static/
-
-EXPOSE 5001
-
-CMD ["python", "app_helpdesk.py"]
+docker run -d \
+  --name techloan-container \
+  -p 5001:5001 \
+  -e TECHLOAN_DATABASE=/data/techloan.db \
+  -v techloan_data:/data \
+  techloan
