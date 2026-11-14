@@ -1,242 +1,100 @@
-from flask import Flask, render_template, request, redirect, url_for
-from database import conectar_db, crear_tablas
-
-app = Flask(__name__)
-
-crear_tablas()
-
-
-@app.route("/")
-def inicio():
-    conexion = conectar_db()
-
-    estadisticas = conexion.execute("""
-        SELECT
-            COUNT(*),
-            SUM(CASE WHEN estado = 'Pendiente' THEN 1 ELSE 0 END),
-            SUM(CASE WHEN estado = 'Prestado' THEN 1 ELSE 0 END),
-            SUM(CASE WHEN estado = 'Devuelto' THEN 1 ELSE 0 END)
-        FROM prestamos
-    """).fetchone()
-
-    conexion.close()
-
-    return render_template(
-        "index.html",
-        total_prestamos=estadisticas[0] or 0,
-        prestamos_pendientes=estadisticas[1] or 0,
-        prestamos_activos=estadisticas[2] or 0,
-        prestamos_devueltos=estadisticas[3] or 0
-    )
-
-
-@app.route("/solicitantes", methods=["GET", "POST"])
-def solicitantes():
-    error = ""
-
-    if request.method == "POST":
-        nombre = request.form.get("nombre", "").strip()
-        correo = request.form.get("correo", "").strip()
-
-        if not nombre or not correo:
-            error = "Debes completar todos los campos."
-        else:
-            conexion = conectar_db()
-
-            try:
-                conexion.execute(
-                    "INSERT INTO solicitantes (nombre, correo) VALUES (?, ?)",
-                    (nombre, correo)
-                )
-
-                conexion.commit()
-
-                return redirect(url_for("solicitantes"))
-
-            except Exception:
-                conexion.rollback()
-                error = "El correo ya existe o los datos no son válidos."
-
-            finally:
-                conexion.close()
-
-    conexion = conectar_db()
-
-    lista_solicitantes = conexion.execute(
-        "SELECT * FROM solicitantes ORDER BY id DESC"
-    ).fetchall()
-
-    conexion.close()
-
-    return render_template(
-        "solicitantes.html",
-        solicitantes=lista_solicitantes,
-        error=error
-    )
-
-
-@app.route("/tipos-equipos", methods=["GET", "POST"])
-def tipos_equipos():
-    error = ""
-
-    if request.method == "POST":
-        nombre = request.form.get("nombre", "").strip()
-        descripcion = request.form.get("descripcion", "").strip()
-
-        if not nombre:
-            error = "El nombre es obligatorio."
-        else:
-            conexion = conectar_db()
-
-            try:
-                conexion.execute(
-                    "INSERT INTO tipos_equipos (nombre, descripcion) VALUES (?, ?)",
-                    (nombre, descripcion)
-                )
-
-                conexion.commit()
-
-                return redirect(url_for("tipos_equipos"))
-
-            except Exception:
-                conexion.rollback()
-                error = "El tipo de equipo ya existe o los datos no son válidos."
-
-            finally:
-                conexion.close()
-
-    conexion = conectar_db()
-
-    lista_tipos = conexion.execute(
-        "SELECT * FROM tipos_equipos ORDER BY id DESC"
-    ).fetchall()
-
-    conexion.close()
-
-    return render_template(
-        "tipos_equipos.html",
-        tipos_equipos=lista_tipos,
-        error=error
-    )
-
-
-@app.route("/prestamos", methods=["GET", "POST"])
-def prestamos():
-    error = ""
-
-    conexion = conectar_db()
-
-    solicitantes = conexion.execute(
-        "SELECT * FROM solicitantes ORDER BY nombre"
-    ).fetchall()
-
-    tipos_equipos = conexion.execute(
-        "SELECT * FROM tipos_equipos ORDER BY nombre"
-    ).fetchall()
-
-    if request.method == "POST":
-        equipo = request.form.get("equipo", "").strip()
-        motivo = request.form.get("motivo", "").strip()
-        urgencia = request.form.get("urgencia")
-        solicitante_id = request.form.get("solicitante_id")
-        tipo_equipo_id = request.form.get("tipo_equipo_id")
-
-        if not equipo or not motivo or not solicitante_id or not tipo_equipo_id:
-            error = "Debes completar todos los campos."
-
-        elif urgencia not in ["Baja", "Media", "Alta"]:
-            error = "Selecciona una urgencia válida."
-
-        else:
-            try:
-                conexion.execute("""
-                    INSERT INTO prestamos
-                    (equipo, motivo, urgencia, solicitante_id, tipo_equipo_id)
-                    VALUES (?, ?, ?, ?, ?)
-                """, (
-                    equipo,
-                    motivo,
-                    urgencia,
-                    solicitante_id,
-                    tipo_equipo_id
-                ))
-
-                conexion.commit()
-                conexion.close()
-
-                return redirect(url_for("prestamos"))
-
-            except Exception:
-                conexion.rollback()
-                error = "No se pudo registrar el préstamo."
-
-    # Filtros de préstamos
-    estado_filtro = request.args.get("estado", "")
-    urgencia_filtro = request.args.get("urgencia", "")
-
-    consulta = """
-        SELECT
-            prestamos.*,
-            solicitantes.nombre AS solicitante,
-            tipos_equipos.nombre AS tipo_equipo
-        FROM prestamos
-        INNER JOIN solicitantes
-            ON prestamos.solicitante_id = solicitantes.id
-        INNER JOIN tipos_equipos
-            ON prestamos.tipo_equipo_id = tipos_equipos.id
-        WHERE 1=1
-    """
-
-    parametros = []
-
-    if estado_filtro:
-        consulta += " AND prestamos.estado = ?"
-        parametros.append(estado_filtro)
-
-    if urgencia_filtro:
-        consulta += " AND prestamos.urgencia = ?"
-        parametros.append(urgencia_filtro)
-
-    consulta += " ORDER BY prestamos.id DESC"
-
-    lista_prestamos = conexion.execute(
-        consulta,
-        parametros
-    ).fetchall()
-
-    conexion.close()
-
-    return render_template(
-        "prestamos.html",
-        prestamos=lista_prestamos,
-        solicitantes=solicitantes,
-        tipos_equipos=tipos_equipos,
-        error=error
-    )
-
-
-@app.route("/prestamos/<int:prestamo_id>/estado", methods=["POST"])
-def actualizar_estado(prestamo_id):
-
-    nuevo_estado = request.form.get("estado")
-
-    estados_validos = ["Pendiente", "Prestado", "Devuelto"]
-
-    if nuevo_estado not in estados_validos:
-        return redirect(url_for("prestamos"))
-
-    conexion = conectar_db()
-
-    conexion.execute(
-        "UPDATE prestamos SET estado = ? WHERE id = ?",
-        (nuevo_estado, prestamo_id)
-    )
-
-    conexion.commit()
-    conexion.close()
-
-    return redirect(url_for("prestamos"))
-
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5001, debug=False)
+jeisita@Devopsaux:~/proyecto-prestamos$ cat templates/index.html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HelpDesk Lite - Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="layout">
+
+        <aside class="sidebar">
+            <h2>☕ HelpDesk Lite</h2>
+
+            
+<nav>
+    <a href="/" class="active">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m3 10 9-7 9 7"/>
+            <path d="M5 9v12h14V9"/>
+            <path d="M9 21v-7h6v7"/>
+        </svg>
+        Inicio
+    </a>
+
+    <a href="/usuarios">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M20 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+        Usuarios
+    </a>
+
+    <a href="/categorias">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.59 13.41 11 3.83V3H4v7h.83l9.58 9.59a2 2 0 0 0 2.83 0l3.35-3.35a2 2 0 0 0 0-2.83Z"/>
+            <circle cx="7.5" cy="7.5" r=".5"/>
+        </svg>
+        Categorías
+    </a>
+
+    <a href="/tickets">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16v5a3 3 0 0 0 0 6v5H4v-5a3 3 0 0 0 0-6V4Z"/>
+            <path d="M13 4v2"/>
+            <path d="M13 10v2"/>
+            <path d="M13 16v2"/>
+        </svg>
+        Tickets
+    </a>
+</nav>
+
+        </aside>
+
+        <main class="main-content">
+
+            <header class="page-header">
+                <h1>Panel principal</h1>
+                <p>Bienvenida al sistema de gestión de soporte técnico.</p>
+            </header>
+
+            <section class="stats-grid">
+
+                <div class="card">
+                    <h3>Total de tickets</h3>
+                    <p class="stat-number">{{ total_tickets }}</p>
+                </div>
+
+                <div class="card">
+                    <h3>Tickets abiertos</h3>
+                    <p class="stat-number">{{ tickets_abiertos }}</p>
+                </div>
+
+                <div class="card">
+                    <h3>En proceso</h3>
+                    <p class="stat-number">{{ tickets_proceso }}</p>
+                </div>
+
+                <div class="card">
+                    <h3>Tickets resueltos</h3>
+                    <p class="stat-number">{{ tickets_resueltos }}</p>
+                </div>
+
+            </section>
+
+            <footer>
+                <p>HelpDesk Lite · Gestión de soporte técnico</p>
+            </footer>
+
+        </main>
+
+    </div>
+
+</body>
+</html>
