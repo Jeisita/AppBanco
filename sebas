@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Categorías - HelpDesk Lite</title>
+    <title>Tipos de equipos - TechLoan</title>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
@@ -13,25 +13,25 @@
     <div class="layout">
 
         <aside class="sidebar">
-            <h2>☕ HelpDesk Lite</h2>
+            <h2>💻 TechLoan</h2>
 
             <nav>
-                <a href="/">⌂ Inicio</a>
-                <a href="/usuarios">♙ Usuarios</a>
-                <a href="/categorias" class="active">▤ Categorías</a>
-                <a href="/tickets">▣ Tickets</a>
+                <a href="{{ url_for('inicio') }}">▦ Panel de control</a>
+                <a href="{{ url_for('solicitantes') }}">👥 Solicitantes</a>
+                <a href="{{ url_for('tipos_equipos') }}" class="active">🖥️ Tipos de equipos</a>
+                <a href="{{ url_for('prestamos') }}">📋 Préstamos</a>
             </nav>
         </aside>
 
         <main class="main-content">
 
             <header class="page-header">
-                <h1>Gestión de categorías</h1>
-                <p>Organiza los tipos de incidentes de soporte técnico.</p>
+                <h1>Tipos de equipos tecnológicos</h1>
+                <p>Clasifica los equipos que pueden ser solicitados en préstamo.</p>
             </header>
 
             <section class="card">
-                <h2>Crear categoría</h2>
+                <h2>Registrar tipo de equipo</h2>
 
                 {% if error %}
                     <div class="alert">{{ error }}</div>
@@ -39,11 +39,11 @@
 
                 <form method="POST">
 
-                    <label>Nombre de la categoría:</label>
+                    <label>Nombre del tipo de equipo:</label>
                     <input
                         type="text"
                         name="nombre"
-                        placeholder="Ej. Hardware, Software, Redes..."
+                        placeholder="Ej. Portátiles, proyectores, tablets..."
                         required
                     >
 
@@ -51,10 +51,10 @@
                     <textarea
                         name="descripcion"
                         rows="4"
-                        placeholder="Describe brevemente esta categoría"
+                        placeholder="Describe las características del tipo de equipo"
                     ></textarea>
 
-                    <button type="submit">Guardar categoría</button>
+                    <button type="submit">Registrar tipo de equipo</button>
 
                 </form>
             </section>
@@ -62,35 +62,35 @@
             <br>
 
             <section class="card">
-                <h2>Categorías registradas</h2>
+                <h2>Tipos de equipos registrados</h2>
 
-                {% if categorias %}
+                {% if tipos_equipos %}
                     <table>
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Nombre</th>
+                                <th>Tipo de equipo</th>
                                 <th>Descripción</th>
                             </tr>
                         </thead>
 
                         <tbody>
-                            {% for categoria in categorias %}
+                            {% for tipo in tipos_equipos %}
                             <tr>
-                                <td>{{ categoria.id }}</td>
-                                <td>{{ categoria.nombre }}</td>
-                                <td>{{ categoria.descripcion }}</td>
+                                <td>{{ tipo.id }}</td>
+                                <td>{{ tipo.nombre }}</td>
+                                <td>{{ tipo.descripcion }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
                     </table>
                 {% else %}
-                    <p>Aún no hay categorías registradas.</p>
+                    <p>No hay tipos de equipos registrados.</p>
                 {% endif %}
             </section>
 
             <footer>
-                <p>HelpDesk Lite · Gestión de soporte técnico</p>
+                <p>TechLoan · Gestión de préstamos tecnológicos</p>
             </footer>
 
         </main>
