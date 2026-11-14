@@ -1,9 +1,11 @@
+jeisita@Devopsaux:~/proyecto-prestamos$ cat templates/usuarios.html
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TechLoan - Panel de control</title>
+    <title>Usuarios - HelpDesk Lite</title>
+
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
@@ -12,61 +14,87 @@
     <div class="layout">
 
         <aside class="sidebar">
-            <h2>💻 TechLoan</h2>
+            <h2>☕ HelpDesk Lite</h2>
 
             <nav>
-                <a href="{{ url_for('inicio') }}" class="active">
-                    ▦ Panel de control
-                </a>
-
-                <a href="{{ url_for('solicitantes') }}">
-                    👥 Solicitantes
-                </a>
-
-                <a href="{{ url_for('tipos_equipos') }}">
-                    🖥️ Tipos de equipos
-                </a>
-
-                <a href="{{ url_for('prestamos') }}">
-                    📋 Préstamos
-                </a>
+                <a href="/">⌂ Inicio</a>
+                <a href="/usuarios" class="active">♙ Usuarios</a>
+                <a href="/categorias">▤ Categorías</a>
+                <a href="/tickets">▣ Tickets</a>
             </nav>
-
         </aside>
 
         <main class="main-content">
 
             <header class="page-header">
-                <h1>Control de préstamos</h1>
-                <p>Sistema de gestión de préstamos de equipos tecnológicos.</p>
+                <h1>Gestión de usuarios</h1>
+                <p>Registra y consulta los usuarios del sistema.</p>
             </header>
 
-            <section class="stats-grid">
+            <section class="card">
+                <h2>Registrar usuario</h2>
 
-                <div class="card">
-                    <h3>Total de solicitudes</h3>
-                    <p class="stat-number">{{ total_prestamos }}</p>
-                </div>
+                {% if error %}
+                    <div class="alert">{{ error }}</div>
+                {% endif %}
 
-                <div class="card">
-                    <h3>Solicitudes pendientes</h3>
-                    <p class="stat-number">{{ prestamos_pendientes }}</p>
-                </div>
+                <form method="POST">
 
-                <div class="card">
-                    <h3>Equipos prestados</h3>
-                    <p class="stat-number">{{ prestamos_activos }}</p>
-                </div>
+                    <label>Nombre completo:</label>
+                    <input
+                        type="text"
+                        name="nombre"
+                        placeholder="Escribe el nombre del usuario"
+                        required
+                    >
 
-                <div class="card">
-                    <h3>Equipos devueltos</h3>
-                    <p class="stat-number">{{ prestamos_devueltos }}</p>
-                </div>
+                    <label>Correo electrónico:</label>
+                    <input
+                        type="email"
+                        name="correo"
+                        placeholder="usuario@correo.com"
+                        required
+                    >
 
+                    <button type="submit">Guardar usuario</button>
+
+                </form>
+            </section>
+
+            <br>
+
+            <section class="card">
+                <h2>Usuarios registrados</h2>
+
+                {% if usuarios %}
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Correo electrónico</th>
+                                <th>Fecha de registro</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for usuario in usuarios %}
+                            <tr>
+                                <td>{{ usuario.id }}</td>
+                                <td>{{ usuario.nombre }}</td>
+                                <td>{{ usuario.correo }}</td>
+                                <td>{{ usuario.fecha_registro }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>Aún no hay usuarios registrados.</p>
+                {% endif %}
             </section>
 
             <footer>
-                <p>TechLoan · Gestión de préstamos tecnológicos</p>
+                <p>HelpDesk Lite · Gestión de soporte técnico</p>
             </footer>
 
         </main>
